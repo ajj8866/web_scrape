@@ -15,6 +15,7 @@ import time
 
 class aniScraper:
     def __init__(self, url = 'https://www.crunchyroll.com', tab = 'popular'):
+        self.tab = tab
         op = webdriver.ChromeOptions()
         op.add_argument('--incognito')
         self.driver = Chrome(ChromeDriverManager().install(), options= op)
@@ -55,11 +56,25 @@ class aniScraper:
             self.driver.find_element(By.XPATH, '//div/a[@token= "shows-alpha"]').click()            
         else:
             print('Please select one of the following arguments: "popular", "updated", "alphabet"')
-
+    
+    def getAlphaPg(self, letter = 'a'):
+        '''
+        letter argument may either incclude any of the alphabet a-z in lower case, "#" or "all"
+        '''
+        #soup = BeautifulSoup(requests.get(self.driver.current_url).content, 'html.parser')
+        #print(soup.prettify)
+        time.sleep(2)
+        url = "/en-gb/videos/anime/alpha?group="+letter
+        try:
+            self.driver.find_element(By.XPATH, f'//div[@id="content-menu-top"]/div/a[@href = "{url}"]').click()
+        except:
+            print('Method only valid if "alphabet" selected as tab argument')
 
 
 sc = aniScraper(tab='alphabet')
 #print(sc)
+sc.getAlphaPg(letter='b')
 time.sleep(3)
+
 
 sc.quitDriver()
