@@ -16,6 +16,7 @@ import time
 class aniScraper:
     def __init__(self, url = 'https://www.crunchyroll.com', tab = 'popular'):
         self.tab = tab
+        self.url = url
         op = webdriver.ChromeOptions()
         op.add_argument('--incognito')
         self.driver = Chrome(ChromeDriverManager().install(), options= op)
@@ -70,11 +71,25 @@ class aniScraper:
         except:
             print('Method only valid if "alphabet" selected as tab argument')
 
+    def filterGenre(self, genre = ['action']):
+        '''
+        genre argument: Must be a list comprising of any combination of the following values:
+            "action", "adventure", "comedy", "drama", "fantasy", "harem", "historical", "idols",
+            "isekai", "magical-girls", "mecha", "music", "mystery", "post-apocalyptic", "romance",
+            "sci-fi", "seinen", "shojo", "shonen", "slice of life", "sports", "supernatural", "thriller"
+        '''
+        time.sleep(2)
+        self.driver.find_element(By.ID, 'genres_link').click()
+        for i in genre:
+            self.driver.find_element(By.ID, i).click()
+            time.sleep(1)
+
+
 
 sc = aniScraper(tab='alphabet')
 #print(sc)
 sc.getAlphaPg(letter='b')
 time.sleep(3)
-
-
+sc.filterGenre(genre=['action', 'mecha', 'music', 'mystery'])
+time.sleep(3)
 sc.quitDriver()
