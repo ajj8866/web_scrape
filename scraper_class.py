@@ -7,6 +7,7 @@ from selenium import webdriver
 from selenium.webdriver import Chrome
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
+from urllib.request import Request, urlopen
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -92,7 +93,9 @@ class aniScraper:
 
     def getWebpage(self):
         print(self.driver.current_url)
-        soup = BeautifulSoup(requests.get(self.driver.current_url).text, 'html.parser')
+        req = Request(self.driver.current_url, headers={'User-Agent': 'Mozilla/5.0'})
+        web_page = urlopen(req).read()
+        soup = BeautifulSoup(web_page, 'html.parser')
         print(soup.prettify())
         return soup
 
