@@ -18,20 +18,26 @@ class aniScraper:
         self.tab = tab
         self.url = url
         op = webdriver.ChromeOptions()
-        op.add_argument('--incognito')
+        #op.add_argument('--incognito')
         self.driver = Chrome(ChromeDriverManager().install(), options= op)
         self.driver.get(url)
-        self.rejCookies()
+        self.accRejCookies()
+        wait = WebDriverWait(self.driver, 10)
+        wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.opt-in > button.opt-in__close'))).click()
         self.getShows()
         self.pickSection(tab)
 
     def __repr__(self):
-        print(str(self.driver.current_url))
+        return str(self.driver.current_url)
 
-    def rejCookies(self):
+    def accRejCookies(self, rej = False):
         wait = WebDriverWait(self.driver, 10)
-        cookies =  wait.until(EC.element_to_be_clickable((By.ID, '_evidon-decline-button')))
-        cookies.click()
+        if rej == True:
+            cookies =  wait.until(EC.element_to_be_clickable((By.ID, '_evidon-decline-button')))
+            cookies.click()
+        else:
+            cookies =  wait.until(EC.element_to_be_clickable((By.ID, '_evidon-accept-button')))
+            cookies.click()
 
     def getShows(self):
         shows = self.driver.find_element(By.XPATH, '//a[@href = "/en-gb/videos/anime"]')
@@ -84,6 +90,16 @@ class aniScraper:
             self.driver.find_element(By.ID, i).click()
             time.sleep(1)
 
+    def getWebpage(self):
+        print(self.driver.current_url)
+        soup = BeautifulSoup(requests.get(self.driver.current_url).text, 'html.parser')
+        print(soup.prettify())
+        return soup
+
+    def getLinks(self):
+        print(f'Current URL: {self.driver.current_url}')
+
+
 
 
 sc = aniScraper(tab='alphabet')
@@ -92,4 +108,8 @@ sc.getAlphaPg(letter='b')
 time.sleep(3)
 sc.filterGenre(genre=['action', 'mecha', 'music', 'mystery'])
 time.sleep(3)
+sc.getWebpage()
+time.sleep(2)
 sc.quitDriver()
+
+#print(BeautifulSoup(requests.get('https://www.crunchyroll.com/en-gb/videos/anime/genres/sci-fi#/videos/anime/genres/sci-fi,supernatural')))
