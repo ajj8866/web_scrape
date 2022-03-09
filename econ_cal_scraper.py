@@ -1,10 +1,9 @@
-from importlib.resources import contents
-from multiprocessing.connection import wait
 import string
 import sys
 import requests
 from bs4 import BeautifulSoup
 import requests
+import uuid
 from selenium import webdriver
 from selenium.webdriver import Chrome
 from selenium.webdriver.common.keys import Keys
@@ -29,10 +28,10 @@ class EconCalScraper:
         (6) correlation: Correlation for selection of forex pairs
         (7) sentiment: For selection of forex pairs
         '''
-        #compiler = re.compile(r'/quote/\w*/chart\?p=\w*')
-        #search_url = 'https://uk.finance.yahoo.com/quote/' + ticker + '?p=' + ticker + '&.tsrc=fin-tre-srch'
         self.tab = tab
         self.url = url
+        self.data = [dict.fromkeys(['ID', 'Date', 'Time to Event', 'Country', 'Event', 'Impact', 'Previous', 'Consensus', 'Actual'])]
+        print(self.data)
         op = webdriver.ChromeOptions()
         op.add_argument('--incognito')
         self.driver = Chrome(ChromeDriverManager().install(), options= op)
@@ -61,6 +60,7 @@ class EconCalScraper:
         elif tab == 'correlation':
             wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-correlation"]'))).click()
             self.popupEsc()
+        self.df = None
 
     def popupEsc(self):
         wait = WebDriverWait(self.driver, 15)
@@ -80,12 +80,28 @@ class EconCalScraper:
 
     def getEvent(self):
         time.sleep(2)
+        ls = []
         if self.tab == 'econ_calendar':
             soup = BeautifulSoup(requests.get(self.driver.current_url).content, 'html.parser')
-            for i in soup.find_all('tr', id = re.compile(r'calRow\d*')):
+            table_row = soup.find_all('tr', id = re.compile(r'calRow\d*')) 
+            for i in table_row:
+                dum_ls = []
+                print(i['data-row-id'])
+                dum_ls.append(i['data-row-id'])
+                print(len(soup.find_all('td', class_ = 'calendarToggleCell')))
                 for j in i.find_all('td', class_ = 'calendarToggleCell'):
                     print(j.get_text().strip())
-            print('#'*20)
+                    dum_ls.append(j.get_text().strip())
+                    ls.append(dum_ls)
+                print(dum_ls)
+                self.data.append({'ID': int(dum_ls[0]), 'Date': dum_ls[1], 'Time to Event': dum_ls[2], 'Country': dum_ls[4], 'Event': dum_ls[5], 'Impact': dum_ls[6], 'Previous': dum_ls[7], 'Consensus': dum_ls[8], 'Actual': dum_ls[9]})
+        self.df = pd.DataFrame(self.data)
+        self.df.set_index('ID', inplace=True)
+    
+    def addUUUID(self):
+        uuid_ls = [uuid.uuid4() for i in range(len(self.df))]
+        print(uuid_ls)
+        self.df['UUID'] = uuid_ls
 
     def getLinks(self):
         soup = BeautifulSoup(requests.get(self.driver.current_url).content, 'html.parser')
@@ -102,3 +118,8 @@ class EconCalScraper:
 scraper = EconCalScraper(tab='econ_calendar')
 scraper.getEvent()
 scraper.quitScrap()
+
+print(scraper.df.head())
+scraper.addUUUID()
+time.sleep(2)
+print(scraper.df.head())
