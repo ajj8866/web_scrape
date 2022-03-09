@@ -14,6 +14,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import pandas as pd
+from scrapy import Selector
 import re
 
 class EconCalScraper:
@@ -38,6 +39,7 @@ class EconCalScraper:
         self.driver.get(url)
         wait = WebDriverWait(self.driver, 15)
         wait.until(EC.element_to_be_clickable((By.ID, 'dismissGdprConsentBannerBtn'))).click()
+        self.fx_list = []
         time.sleep(1)
 
         if tab == 'econ_calendar':
@@ -96,7 +98,9 @@ class EconCalScraper:
                 print(dum_ls)
                 self.data.append({'ID': int(dum_ls[0]), 'Date': dum_ls[1], 'Time to Event': dum_ls[2], 'Country': dum_ls[4], 'Event': dum_ls[5], 'Impact': dum_ls[6], 'Previous': dum_ls[7], 'Consensus': dum_ls[8], 'Actual': dum_ls[9]})
         self.df = pd.DataFrame(self.data)
-        self.df.set_index('ID', inplace=True)
+        self.addUUUID()
+        self.df.set_index(['ID', 'UUDI'], inplace=True)
+        self.df = self.df.iloc[1:]
     
     def addUUUID(self):
         uuid_ls = [uuid.uuid4() for i in range(len(self.df))]
@@ -108,6 +112,23 @@ class EconCalScraper:
         for i in soup.find_all('a'):          
             print(i.attrs['href'])
 
+    def findByXpath(self, xpath=None, text_only = False):
+        print('Current Page URL: ',self.driver.current_url)
+        time.sleep(5)
+        element = self.driver.find_elements(By.XPATH, xpath)
+        #print(element.get_property('href'))
+        print(self.driver.title)
+        time.sleep(2)
+        fxsitelinks = re.compile(r'https://www.myfxbook.com/.*')
+        for i in element:
+            #print(type(i.get_attribute('href')))
+            if (i.get_attribute('href') is not None):
+                if re.findall(fxsitelinks, i.get_attribute('href')) != []:
+                    print(i.get_attribute('href'))
+                    self.fx_list.append(i.get_attribute('href'))
+        time.sleep(5)
+        self.quitScrap()
+    
 
 #for i in ['econ_calendar', 'fin_cal', 'news', 'spread', 'sentiment', 'heatmap', 'correlation']:    
 #    scraper = EconCalScraper(tab=i)
@@ -115,6 +136,8 @@ class EconCalScraper:
 #    scraper.quitScrap()
 #    print('Done for: ', i)
 #    time.sleep(3)
+
+'''
 scraper = EconCalScraper(tab='econ_calendar')
 scraper.getEvent()
 scraper.quitScrap()
@@ -123,3 +146,9 @@ print(scraper.df.head())
 scraper.addUUUID()
 time.sleep(2)
 print(scraper.df.head())
+'''
+
+scraper = EconCalScraper(tab='econ_calendar')
+scraper.findByXpath(xpath='//a')
+print(scraper.fx_list)
+print(len(scraper.fx_list))
