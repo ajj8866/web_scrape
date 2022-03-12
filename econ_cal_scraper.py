@@ -37,30 +37,32 @@ class EconCalScraper:
         op.add_argument('--incognito')
         self.driver = Chrome(ChromeDriverManager().install(), options= op)
         self.driver.get(url)
-        wait = WebDriverWait(self.driver, 15)
-        wait.until(EC.element_to_be_clickable((By.ID, 'dismissGdprConsentBannerBtn'))).click()
-        self.fx_list = []
+        self.wait = WebDriverWait(self.driver, 15)
+        self.wait.until(EC.element_to_be_clickable((By.ID, 'dismissGdprConsentBannerBtn'))).click()
+        self.link_list = []
         time.sleep(1)
+        self.getPage()
 
-        if tab == 'econ_calendar':
-            wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-economic-calendar"]'))).click()
+    def getPage(self):
+        if self.tab == 'econ_calendar':
+            self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-economic-calendar"]'))).click()
             self.popupEsc()
-        elif tab == 'fin_cal':
-            wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-calculators"]'))).click()
+        elif self.tab == 'fin_cal':
+            self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-calculators"]'))).click()
             self.popupEsc()
-        elif tab == 'news':
-            wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-news"]'))).click()
+        elif self.tab == 'news':
+            self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-news"]'))).click()
             self.popupEsc()
-        elif tab == 'spread':
-            wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-spreads"]'))).click()
+        elif self.tab == 'spread':
+            self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-spreads"]'))).click()
             self.popupEsc()
-        elif tab == 'sentiment':
-            wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-outlook"]'))).click()
-        elif tab == 'heatmap':
-            wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-heatmap"]'))).click()
+        elif self.tab == 'sentiment':
+            self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-outlook"]'))).click()
+        elif self.tab == 'heatmap':
+            self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-heatmap"]'))).click()
             self.popupEsc()
-        elif tab == 'correlation':
-            wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-correlation"]'))).click()
+        elif self.tab == 'correlation':
+            self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-correlation"]'))).click()
             self.popupEsc()
         self.df = None
 
@@ -75,10 +77,11 @@ class EconCalScraper:
             pass
     
     def quitScrap(self):
+        time.sleep(1)
         self.driver.close()
 
-    def __repr__(self):
-        return self.driver.current_url
+    def __str__(self):
+        return str(self.driver.current_url)
 
     def getEvent(self):
         time.sleep(2)
@@ -107,27 +110,47 @@ class EconCalScraper:
         print(uuid_ls)
         self.df['UUID'] = uuid_ls
 
-    def getLinks(self):
-        soup = BeautifulSoup(requests.get(self.driver.current_url).content, 'html.parser')
-        for i in soup.find_all('a'):          
-            print(i.attrs['href'])
+    #def getLinks(self):
+    #    soup = BeautifulSoup(requests.get(self.driver.current_url).content, 'html.parser')
+    #    for i in soup.find_all('a'):          
+    #        print(i.attrs['href'])
 
-    def findByXpath(self, xpath=None, text_only = False):
+    def getLinks(self):
         print('Current Page URL: ',self.driver.current_url)
         time.sleep(5)
-        element = self.driver.find_elements(By.XPATH, xpath)
-        #print(element.get_property('href'))
+        element = self.driver.find_elements(By.XPATH, '//a')
         print(self.driver.title)
         time.sleep(2)
         fxsitelinks = re.compile(r'https://www.myfxbook.com/.*')
         for i in element:
-            #print(type(i.get_attribute('href')))
             if (i.get_attribute('href') is not None):
                 if re.findall(fxsitelinks, i.get_attribute('href')) != []:
                     print(i.get_attribute('href'))
-                    self.fx_list.append(i.get_attribute('href'))
+                    self.link_list.append(i.get_attribute('href'))
         time.sleep(5)
         self.quitScrap()
+        return self.link_list
+    
+    @property
+    def tab(self):
+        return self.tab
+
+    @tab.setter
+    def tab(self, new_val):
+        self.tab = new_val
+    
+    def allLinks(self):
+        time.sleep(5)
+        link_list = []
+        for i in ['econ_calendar','fin_cal','news','spread','sentiment','heatmap','correlation']:
+            self.tab = i
+            self.getLinks()
+            link_list.append(self.link_list)
+            time.sleep(5)
+        print(link_list)
+
+
+
     
 
 #for i in ['econ_calendar', 'fin_cal', 'news', 'spread', 'sentiment', 'heatmap', 'correlation']:    
@@ -149,6 +172,7 @@ print(scraper.df.head())
 '''
 
 scraper = EconCalScraper(tab='econ_calendar')
-scraper.findByXpath(xpath='//a')
-print(scraper.fx_list)
-print(len(scraper.fx_list))
+scraper.getLinks()
+scraper.allLinks()
+#time.sleep(3)
+#scraper.allLinks()
