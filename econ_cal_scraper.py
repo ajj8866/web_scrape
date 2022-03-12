@@ -29,7 +29,8 @@ class EconCalScraper:
         (6) correlation: Correlation for selection of forex pairs
         (7) sentiment: For selection of forex pairs
         '''
-        self.tab = tab
+        self.link_list = []
+        self._tab = tab
         self.url = url
         self.data = [dict.fromkeys(['ID', 'Date', 'Time to Event', 'Country', 'Event', 'Impact', 'Previous', 'Consensus', 'Actual'])]
         print(self.data)
@@ -44,24 +45,24 @@ class EconCalScraper:
         self.getPage()
 
     def getPage(self):
-        if self.tab == 'econ_calendar':
+        if self._tab == 'econ_calendar':
             self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-economic-calendar"]'))).click()
             self.popupEsc()
-        elif self.tab == 'fin_cal':
+        elif self._tab == 'fin_cal':
             self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-calculators"]'))).click()
             self.popupEsc()
-        elif self.tab == 'news':
+        elif self._tab == 'news':
             self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-news"]'))).click()
             self.popupEsc()
-        elif self.tab == 'spread':
+        elif self._tab == 'spread':
             self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-spreads"]'))).click()
             self.popupEsc()
-        elif self.tab == 'sentiment':
+        elif self._tab == 'sentiment':
             self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-outlook"]'))).click()
-        elif self.tab == 'heatmap':
+        elif self._tab == 'heatmap':
             self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-heatmap"]'))).click()
             self.popupEsc()
-        elif self.tab == 'correlation':
+        elif self._tab == 'correlation':
             self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-correlation"]'))).click()
             self.popupEsc()
         self.df = None
@@ -79,6 +80,7 @@ class EconCalScraper:
     def quitScrap(self):
         time.sleep(1)
         self.driver.close()
+        self.driver.quit()
 
     def __str__(self):
         return str(self.driver.current_url)
@@ -86,7 +88,7 @@ class EconCalScraper:
     def getEvent(self):
         time.sleep(2)
         ls = []
-        if self.tab == 'econ_calendar':
+        if self._tab == 'econ_calendar':
             soup = BeautifulSoup(requests.get(self.driver.current_url).content, 'html.parser')
             table_row = soup.find_all('tr', id = re.compile(r'calRow\d*')) 
             for i in table_row:
@@ -137,17 +139,20 @@ class EconCalScraper:
 
     @tab.setter
     def tab(self, new_val):
-        self.tab = new_val
+        self._tab = new_val
     
-    def allLinks(self):
+    @classmethod
+    def allLinks(cls):
         time.sleep(5)
         link_list = []
         for i in ['econ_calendar','fin_cal','news','spread','sentiment','heatmap','correlation']:
-            self.tab = i
-            self.getLinks()
-            link_list.append(self.link_list)
+            new_inst = cls(url = 'https://www.myfxbook.com/', tab = i)
+            new_inst.getLinks()
+            link_list.extend(new_inst.link_list)
             time.sleep(5)
         print(link_list)
+        print(len(link_list))
+        return link_list
 
 
 
@@ -172,7 +177,11 @@ print(scraper.df.head())
 '''
 
 scraper = EconCalScraper(tab='econ_calendar')
-scraper.getLinks()
+#scraper.getLinks()
 scraper.allLinks()
+
 #time.sleep(3)
 #scraper.allLinks()
+scraper.quitScrap()
+
+print(set(scraper.link_list))
