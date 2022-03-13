@@ -150,8 +150,9 @@ class EconCalScraper:
             new_inst.getLinks()
             link_list.extend(new_inst.link_list)
             time.sleep(5)
-        print(link_list)
+        link_list = set(link_list)
         print(len(link_list))
+        print(link_list)
         return link_list
 
 
@@ -183,5 +184,3 @@ scraper.allLinks()
 #time.sleep(3)
 #scraper.allLinks()
 scraper.quitScrap()
-
-print(set(scraper.link_list))
