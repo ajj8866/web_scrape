@@ -1,8 +1,8 @@
 import string
 import sys
+from xml.dom.minidom import Element
 import requests
 from bs4 import BeautifulSoup
-import requests
 import uuid
 from selenium import webdriver
 from selenium.webdriver import Chrome
@@ -33,7 +33,6 @@ class EconCalScraper:
         self._tab = tab
         self.url = url
         self.data = [dict.fromkeys(['ID', 'Date', 'Time to Event', 'Country', 'Event', 'Impact', 'Previous', 'Consensus', 'Actual'])]
-        print(self.data)
         op = webdriver.ChromeOptions()
         op.add_argument('--incognito')
         self.driver = Chrome(ChromeDriverManager().install(), options= op)
@@ -41,6 +40,7 @@ class EconCalScraper:
         self.wait = WebDriverWait(self.driver, 15)
         self.wait.until(EC.element_to_be_clickable((By.ID, 'dismissGdprConsentBannerBtn'))).click()
         self.link_list = []
+        self.img = []
         time.sleep(1)
         self.getPage()
 
@@ -107,15 +107,23 @@ class EconCalScraper:
         self.df.set_index(['ID', 'UUDI'], inplace=True)
         self.df = self.df.iloc[1:]
     
+    def getImgs(self, ext = '.png'):
+        print(self.driver.current_url)
+        time.sleep(2)
+        element = self.driver.find_elements(By.XPATH, '//img')
+        img_type = re.compile(f'{ext}$')
+        for i in element:
+            if re.findall(img_type, i.get_attribute('src')) != []:
+                print(i.get_attribute('src'))
+                self.img.append(i.get_attribute('src'))
+        self.quitScrap()
+        print(self.img)
+        return self.img
+
     def addUUUID(self):
         uuid_ls = [uuid.uuid4() for i in range(len(self.df))]
         print(uuid_ls)
         self.df['UUID'] = uuid_ls
-
-    #def getLinks(self):
-    #    soup = BeautifulSoup(requests.get(self.driver.current_url).content, 'html.parser')
-    #    for i in soup.find_all('a'):          
-    #        print(i.attrs['href'])
 
     def getLinks(self):
         print('Current Page URL: ',self.driver.current_url)
@@ -154,10 +162,13 @@ class EconCalScraper:
         print(len(link_list))
         print(link_list)
         return link_list
-
-
-
     
+    @classmethod
+    def reset(cls, new_tb, url = 'https://www.myfxbook.com/'):
+        cls.inst = None
+        cls.inst = EconCalScraper(url= url, tab= new_tb)
+        return cls.inst
+
 
 #for i in ['econ_calendar', 'fin_cal', 'news', 'spread', 'sentiment', 'heatmap', 'correlation']:    
 #    scraper = EconCalScraper(tab=i)
@@ -177,6 +188,9 @@ time.sleep(2)
 print(scraper.df.head())
 '''
 
+
+
+'''
 scraper = EconCalScraper(tab='econ_calendar')
 #scraper.getLinks()
 scraper.allLinks()
@@ -184,3 +198,8 @@ scraper.allLinks()
 #time.sleep(3)
 #scraper.allLinks()
 scraper.quitScrap()
+'''
+
+scraper = EconCalScraper(tab='econ_calendar')
+time.sleep(2)
+scraper.getImgs()
