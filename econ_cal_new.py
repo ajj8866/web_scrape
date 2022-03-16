@@ -49,7 +49,7 @@ class newsCalendar(EconCalScraper):
             print(dum_ls)
             self.data.append({'ID': int(dum_ls[0]), 'Date': dum_ls[1], 'Time to Event': dum_ls[2], 'Country': dum_ls[4], 'Event': dum_ls[5], 'Impact': dum_ls[6], 'Previous': dum_ls[7], 'Consensus': dum_ls[8], 'Actual': dum_ls[9]})
         self.df = pd.DataFrame(self.data)
-        self.addUUID()
+        self.df['UUID'] = self.addUUID(obj=self.df)
         self.df.set_index(['ID', 'UUID'], inplace=True)
         self.df = self.df.iloc[1:]
         print(self.df)

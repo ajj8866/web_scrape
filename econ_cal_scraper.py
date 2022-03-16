@@ -37,7 +37,7 @@ class EconCalScraper:
         self.driver.get(url)
         self.wait = WebDriverWait(self.driver, 15)
         self.wait.until(EC.element_to_be_clickable((By.ID, 'dismissGdprConsentBannerBtn'))).click()
-        img_link_dict = {}
+        img_link_dict = dict.fromkeys('Links', 'Images')
         self.link_list = []
         self.img = []
         time.sleep(1)
@@ -97,10 +97,9 @@ class EconCalScraper:
         print(self.img)
         return self.img
 
-    def addUUID(self):
-        uuid_ls = [uuid.uuid4() for i in range(len(self.df))]
-        print(uuid_ls)
-        self.df['UUID'] = uuid_ls
+    def addUUID(self, obj):
+        uuid_ls = [uuid.uuid4() for i in range(len(obj))]
+        return uuid_ls
 
     def getLinks(self):
         print('Current Page URL: ',self.driver.current_url)
