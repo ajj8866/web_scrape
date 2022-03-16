@@ -3,6 +3,7 @@ import sys
 import requests
 from bs4 import BeautifulSoup
 import uuid
+from datetime import datetime as dt
 from selenium import webdriver
 from selenium.webdriver import Chrome
 from selenium.webdriver.common.keys import Keys
@@ -51,7 +52,10 @@ class newsCalendar(EconCalScraper):
         self.df = pd.DataFrame(self.data)
         self.df['UUID'] = self.addUUID(obj=self.df)
         self.df.set_index(['ID', 'UUID'], inplace=True)
+        #self.df['Formatted Date'] = self.df['Date'].apply(lambda i: dt.strptime(i, "%B %d, %H:%M"))
         self.df = self.df.iloc[1:]
+        self.df['Date'] = self.df['Date'].apply(lambda i: i + ' 2022')
+        self.df['Formatted Date'] = self.df['Date'].apply(lambda i: dt.strptime(i, '%b %d, %H:%M %Y'))
         print(self.df)
         return self.df, self.data
 
