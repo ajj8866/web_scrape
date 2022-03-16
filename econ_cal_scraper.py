@@ -29,16 +29,15 @@ class EconCalScraper:
         (6) correlation: Correlation for selection of forex pairs
         (7) sentiment: For selection of forex pairs
         '''
-        self.link_list = []
         self._tab = tab
         self.url = url
-        self.data = [dict.fromkeys(['ID', 'Date', 'Time to Event', 'Country', 'Event', 'Impact', 'Previous', 'Consensus', 'Actual'])]
         op = webdriver.ChromeOptions()
         op.add_argument('--incognito')
         self.driver = Chrome(ChromeDriverManager().install(), options= op)
         self.driver.get(url)
         self.wait = WebDriverWait(self.driver, 15)
         self.wait.until(EC.element_to_be_clickable((By.ID, 'dismissGdprConsentBannerBtn'))).click()
+        img_link_dict = {}
         self.link_list = []
         self.img = []
         time.sleep(1)
@@ -47,6 +46,7 @@ class EconCalScraper:
     def getPage(self):
         if self._tab == 'econ_calendar':
             self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-economic-calendar"]'))).click()
+            print('Curent name; ', __name__)
             self.popupEsc()
         elif self._tab == 'fin_cal':
             self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-calculators"]'))).click()
@@ -65,7 +65,6 @@ class EconCalScraper:
         elif self._tab == 'correlation':
             self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-correlation"]'))).click()
             self.popupEsc()
-        self.df = None
 
     def popupEsc(self):
         wait = WebDriverWait(self.driver, 15)
@@ -84,28 +83,6 @@ class EconCalScraper:
 
     def __str__(self):
         return str(self.driver.current_url)
-
-    def getEvent(self):
-        time.sleep(2)
-        ls = []
-        if self._tab == 'econ_calendar':
-            soup = BeautifulSoup(requests.get(self.driver.current_url).content, 'html.parser')
-            table_row = soup.find_all('tr', id = re.compile(r'calRow\d*')) 
-            for i in table_row:
-                dum_ls = []
-                print(i['data-row-id'])
-                dum_ls.append(i['data-row-id'])
-                print(len(soup.find_all('td', class_ = 'calendarToggleCell')))
-                for j in i.find_all('td', class_ = 'calendarToggleCell'):
-                    print(j.get_text().strip())
-                    dum_ls.append(j.get_text().strip())
-                    ls.append(dum_ls)
-                print(dum_ls)
-                self.data.append({'ID': int(dum_ls[0]), 'Date': dum_ls[1], 'Time to Event': dum_ls[2], 'Country': dum_ls[4], 'Event': dum_ls[5], 'Impact': dum_ls[6], 'Previous': dum_ls[7], 'Consensus': dum_ls[8], 'Actual': dum_ls[9]})
-        self.df = pd.DataFrame(self.data)
-        self.addUUUID()
-        self.df.set_index(['ID', 'UUDI'], inplace=True)
-        self.df = self.df.iloc[1:]
     
     def getImgs(self, ext = '.png'):
         print(self.driver.current_url)
@@ -120,7 +97,7 @@ class EconCalScraper:
         print(self.img)
         return self.img
 
-    def addUUUID(self):
+    def addUUID(self):
         uuid_ls = [uuid.uuid4() for i in range(len(self.df))]
         print(uuid_ls)
         self.df['UUID'] = uuid_ls
@@ -191,15 +168,15 @@ print(scraper.df.head())
 
 
 '''
-scraper = EconCalScraper(tab='econ_calendar')
-#scraper.getLinks()
-scraper.allLinks()
-
-#time.sleep(3)
-#scraper.allLinks()
-scraper.quitScrap()
+    scraper = EconCalScraper(tab='econ_calendar')
+    time.sleep(2)
+    scraper.getImgs()
 '''
+if __name__ == '__main__':
+    scraper = EconCalScraper(tab='econ_calendar')
+    #scraper.getLinks()
+    scraper.allLinks()
 
-scraper = EconCalScraper(tab='econ_calendar')
-time.sleep(2)
-scraper.getImgs()
+    #time.sleep(3)
+    #scraper.allLinks()
+    scraper.quitScrap()
