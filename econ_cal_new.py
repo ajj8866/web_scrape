@@ -24,7 +24,7 @@ class newsCalendar(EconCalScraper):
     def __init__(self, url='https://www.myfxbook.com/'):
         super().__init__(url, tab = newsCalendar.econ_tab)
         self.df = None
-        self.data = self.data = [dict.fromkeys(['ID', 'Date', 'Time to Event', 'Country', 'Event', 'Impact', 'Previous', 'Consensus', 'Actual'])]
+        self.data = [dict.fromkeys(['ID', 'Date', 'Time to Event', 'Country', 'Event', 'Impact', 'Previous', 'Consensus', 'Actual'])]
 
     def getPage(self):
         return super().getPage()

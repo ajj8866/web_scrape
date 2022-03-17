@@ -1,3 +1,4 @@
+from wsgiref import headers
 import requests
 from bs4 import BeautifulSoup
 import uuid
@@ -11,14 +12,18 @@ from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import pandas as pd
+from pandas import json_normalize
 from scrapy import Selector
 import re
 import os
 import json
 from pathlib import Path
 from urllib.request import urlretrieve
+import urllib
+from urllib import request
 from datetime import datetime as dt
 import shutil
+
 
 class EconCalScraper:
     def __init__(self, url= 'https://www.myfxbook.com/', tab = 'econ_calendar'):
@@ -131,13 +136,25 @@ class EconCalScraper:
             os.mkdir(Path(Path.cwd(), 'Datapipe', 'raw_data'))
 
     def mkImgFold(self):
-        if 'images' not in os.listdir(Path(Path.cwd, 'raw_data')):
+        print('#'*20)
+        print(os.listdir(Path(Path.cwd(), 'Datapipe','raw_data')))
+        print('#'*20)
+        if 'images' not in os.listdir(Path(Path.cwd(), 'Datapipe','raw_data')):
             os.mkdir(Path(Path.cwd(), 'Datapipe', 'raw_data', 'images'))
     
     def uploadImg(self):
+        self.mkImgFold()
+        headers = {}
+        headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'
         for i, img_url in enumerate(self.img_dict):
-            if (img_url['Image'].split('.')[-1] in ['png', 'jpeg']):
-                urlretrieve(img_url['Image'], f'./raw_data/{i}.webp')
+            if (img_url['Image'].split('.')[-1] in ['png']):
+                #urlretrieve(img_url['Image'], f'./raw_data/{i}.webp')
+                req = request.Request(img_url['Image'], headers=headers)
+                resp = request.urlopen(req)
+                resp_data = resp.read()
+                with open(Path(Path.cwd(), 'Datapipe', 'raw_data', 'images', f'{i}.png'), 'w+') as img_file:
+                    img_file.write(str(resp_data))
+
     
     def archImg(self):
         dum_img_list = []
@@ -146,7 +163,9 @@ class EconCalScraper:
             dum_img_list.append(i['Image'])
             dum_img_uuid.append(i['UUID'])
         new_img_dict = {'Images': dum_img_list, 'UUID': dum_img_uuid}
-        with open(Path(Path.cwd(), 'Datapipe', 'raw_data', 'data.json'), 'a+') as f:
+        with open(Path(Path.cwd(), 'Datapipe', 'raw_data', 'data.json'), 'w+') as f:
+            #temp_file = json.load(f)
+            #print(temp_file)
             f.write(json.dumps(new_img_dict))
             f.write('\n')
             f.close()
@@ -211,9 +230,10 @@ print(scraper.df.head())
 
 '''
 if __name__ == '__main__':
-    scraper = EconCalScraper(tab='econ_calendar')
+    scraper = EconCalScraper(tab='news')
     time.sleep(2)
     scraper.getImgs(ext='png')
     time.sleep(2)
+    scraper.uploadImg()
     scraper.archImg()
     scraper.quitScrap()
