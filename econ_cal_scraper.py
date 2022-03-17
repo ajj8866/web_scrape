@@ -1,6 +1,3 @@
-import string
-import sys
-from xml.dom.minidom import Element
 import requests
 from bs4 import BeautifulSoup
 import uuid
@@ -16,6 +13,12 @@ import time
 import pandas as pd
 from scrapy import Selector
 import re
+import os
+import json
+from pathlib import Path
+from urllib.request import urlretrieve
+from datetime import datetime as dt
+import shutil
 
 class EconCalScraper:
     def __init__(self, url= 'https://www.myfxbook.com/', tab = 'econ_calendar'):
@@ -37,11 +40,11 @@ class EconCalScraper:
         self.driver.get(url)
         self.wait = WebDriverWait(self.driver, 15)
         self.wait.until(EC.element_to_be_clickable((By.ID, 'dismissGdprConsentBannerBtn'))).click()
-        img_link_dict = dict.fromkeys('Links', 'Images')
-        self.link_list = []
-        self.img = []
+        self.link_dict = [dict.fromkeys(['UUID', 'Links'])]
+        self.img_dict = [dict.fromkeys(['UUID', 'Image', 'Extension'])]
         time.sleep(1)
         self.getPage()
+        self.mkPath()
 
     def getPage(self):
         if self._tab == 'econ_calendar':
@@ -84,7 +87,7 @@ class EconCalScraper:
     def __str__(self):
         return str(self.driver.current_url)
     
-    def getImgs(self, ext = '.png'):
+    def getImgs(self, ext = ''):
         print(self.driver.current_url)
         time.sleep(2)
         element = self.driver.find_elements(By.XPATH, '//img')
@@ -92,10 +95,12 @@ class EconCalScraper:
         for i in element:
             if re.findall(img_type, i.get_attribute('src')) != []:
                 print(i.get_attribute('src'))
-                self.img.append(i.get_attribute('src'))
-        self.quitScrap()
-        print(self.img)
-        return self.img
+                self.img_dict.append({'UUID': str(uuid.uuid4()), 'Image' :i.get_attribute('src'), 'Extension': i.get_attribute('src').split('.')[-1]})
+        #self.quitScrap()
+        self.img_dict = self.img_dict[1:]
+        print(self.img_dict)
+        #elf.img_link_dict['Images'].extend(self.img)
+        return self.img_dict
 
     def addUUID(self, obj):
         uuid_ls = [uuid.uuid4() for i in range(len(obj))]
@@ -107,16 +112,45 @@ class EconCalScraper:
         element = self.driver.find_elements(By.XPATH, '//a')
         print(self.driver.title)
         time.sleep(2)
+        print(self.link_dict)
         fxsitelinks = re.compile(r'https://www.myfxbook.com/.*')
         for i in element:
             if (i.get_attribute('href') is not None):
                 if re.findall(fxsitelinks, i.get_attribute('href')) != []:
                     print(i.get_attribute('href'))
-                    self.link_list.append(i.get_attribute('href'))
+                    self.link_dict.append({'Links': i.get_attribute('href')})
+                    self.link_dict.append({'UUID': str(uuid.uuid4())})
         time.sleep(5)
-        self.quitScrap()
-        return self.link_list
+        #self.quitScrap()
+        #self.img_link_dict['Images'].extend(self.link_list)
+        print(self.link_dict)
+        return self.link_dict
     
+    def mkPath(self):
+        if 'raw_data' not in os.listdir(Path(Path.cwd(), 'Datapipe')):
+            os.mkdir(Path(Path.cwd(), 'Datapipe', 'raw_data'))
+
+    def mkImgFold(self):
+        if 'images' not in os.listdir(Path(Path.cwd, 'raw_data')):
+            os.mkdir(Path(Path.cwd(), 'Datapipe', 'raw_data', 'images'))
+    
+    def uploadImg(self):
+        for i, img_url in enumerate(self.img_dict):
+            if (img_url['Image'].split('.')[-1] in ['png', 'jpeg']):
+                urlretrieve(img_url['Image'], f'./raw_data/{i}.webp')
+    
+    def archImg(self):
+        dum_img_list = []
+        dum_img_uuid = []
+        for i in self.img_dict:
+            dum_img_list.append(i['Image'])
+            dum_img_uuid.append(i['UUID'])
+        new_img_dict = {'Images': dum_img_list, 'UUID': dum_img_uuid}
+        with open(Path(Path.cwd(), 'Datapipe', 'raw_data', 'data.json'), 'a+') as f:
+            f.write(json.dumps(new_img_dict))
+            f.write('\n')
+            f.close()
+
     @property
     def tab(self):
         return self.tab
@@ -167,15 +201,19 @@ print(scraper.df.head())
 
 
 '''
-    scraper = EconCalScraper(tab='econ_calendar')
-    time.sleep(2)
-    scraper.getImgs()
-'''
-if __name__ == '__main__':
-    scraper = EconCalScraper(tab='econ_calendar')
     #scraper.getLinks()
     scraper.allLinks()
 
     #time.sleep(3)
     #scraper.allLinks()
+    scraper.quitScrap()
+
+
+'''
+if __name__ == '__main__':
+    scraper = EconCalScraper(tab='econ_calendar')
+    time.sleep(2)
+    scraper.getImgs(ext='png')
+    time.sleep(2)
+    scraper.archImg()
     scraper.quitScrap()
