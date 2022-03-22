@@ -27,7 +27,7 @@ import shutil
 
 
 class EconCalScraper:
-    def __init__(self, url= 'https://www.myfxbook.com/', tab = 'econ_calendar'):
+    def __init__(self, url= 'https://www.myfxbook.com/', tab = 'econ_calendar', headless = True):
         '''
         Accepted tab arguments: 
         (1) econ_calendar: For economic calndar
@@ -41,6 +41,12 @@ class EconCalScraper:
         self._tab = tab
         self.url = url
         op = webdriver.ChromeOptions()
+        if headless == True:
+            op.add_argument('--headless')
+        op.add_argument('--no-sandbox')
+        op.add_argument('--disable-dev-shm-usage')
+        op.add_argument("--window-size=1920,1080")
+        op.add_argument("--remote-debugging-port=9222")
         op.add_argument('--incognito')
         self.driver = Chrome(ChromeDriverManager().install(), options= op)
         self.driver.get(url)
