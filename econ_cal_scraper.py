@@ -147,9 +147,11 @@ class EconCalScraper:
         self.mkImgFold()
         headers = {}
         headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'
-        for i, img_url in enumerate(self.img_dict):
+        num_list = []
+        for j in os.listdir(Path(Path.cwd(), 'Datapipe', 'raw_data', 'images')):
+            num_list.append(int(j.split('.')[0].zfill(4)))
+        for i, img_url in enumerate(self.img_dict, start=len(num_list)):
             if (img_url['Image'].split('.')[-1] in ['png']):
-                #urlretrieve(img_url['Image'], f'./raw_data/{i}.webp')
                 req = request.Request(img_url['Image'], headers=headers)
                 resp = request.urlopen(req)
                 resp_data_byte = resp.read()  #.decode('utf-8')
@@ -164,7 +166,7 @@ class EconCalScraper:
             dum_img_list.append(i['Image'])
             dum_img_uuid.append(i['UUID'])
         new_img_dict = {'Images': dum_img_list, 'UUID': dum_img_uuid}
-        with open(Path(Path.cwd(), 'Datapipe', 'raw_data', 'data.json'), 'w+') as f:
+        with open(Path(Path.cwd(), 'Datapipe', 'raw_data', 'data.json'), 'a+') as f:
             #temp_file = json.load(f)
             #print(temp_file)
             f.write(json.dumps(new_img_dict))
@@ -232,10 +234,10 @@ print(scraper.df.head())
 
 '''
 if __name__ == '__main__':
-    scraper = EconCalScraper(tab='sentiment')
+    scraper = EconCalScraper(tab='econ_calendar')
     time.sleep(2)
     scraper.getImgs(ext='png')
     time.sleep(2)
     scraper.uploadImg()
-    scraper.archImg()
+    #scraper.archImg()
     scraper.quitScrap()
