@@ -1,4 +1,5 @@
-from wsgiref import headers
+from fileinput import close
+from lib2to3.pgen2 import driver
 import requests
 from bs4 import BeautifulSoup
 import uuid
@@ -151,11 +152,11 @@ class EconCalScraper:
                 #urlretrieve(img_url['Image'], f'./raw_data/{i}.webp')
                 req = request.Request(img_url['Image'], headers=headers)
                 resp = request.urlopen(req)
-                resp_data = resp.read()
-                with open(Path(Path.cwd(), 'Datapipe', 'raw_data', 'images', f'{i}.png'), 'w+') as img_file:
-                    img_file.write(str(resp_data))
+                resp_data_byte = resp.read()  #.decode('utf-8')
+                resp_data = resp_data_byte #.decode('utf-8')
+                with open(Path(Path.cwd(), 'Datapipe', 'raw_data', 'images', f'{i}.png'), 'wb') as img_file:
+                    img_file.write(resp_data)
 
-    
     def archImg(self):
         dum_img_list = []
         dum_img_uuid = []
@@ -177,6 +178,7 @@ class EconCalScraper:
     @tab.setter
     def tab(self, new_val):
         self._tab = new_val
+
     
     @classmethod
     def allLinks(cls):
@@ -230,7 +232,7 @@ print(scraper.df.head())
 
 '''
 if __name__ == '__main__':
-    scraper = EconCalScraper(tab='news')
+    scraper = EconCalScraper(tab='sentiment')
     time.sleep(2)
     scraper.getImgs(ext='png')
     time.sleep(2)
