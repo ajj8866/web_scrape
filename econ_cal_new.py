@@ -17,7 +17,7 @@ import pandas as pd
 from scrapy import Selector
 import re
 from econ_cal_scraper import EconCalScraper
-
+from sqlalchemy import create_engine
 
 class newsCalendar(EconCalScraper):
     econ_tab = 'econ_calendar'
@@ -25,9 +25,25 @@ class newsCalendar(EconCalScraper):
         super().__init__(url, tab = newsCalendar.econ_tab)
         self.df = None
         self.data = [dict.fromkeys(['ID', 'Date', 'Time to Event', 'Country', 'Event', 'Impact', 'Previous', 'Consensus', 'Actual'])]
+        DATABASE_TYPE = 'postgresql'
+        DBAPI = 'psycopg2'
+        ENDPOINT = str(input('Enter endpoint'))
+        USER = 'postgres'
+        PASSWORD = input('Enter RDS password')
+        PORT = 5432
+        DATABASE = 'postgres'
+        self.engine = create_engine(f'{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{ENDPOINT}:{PORT}/{DATABASE}')
+        self.engine.connect()
 
     def getPage(self):
         return super().getPage()
+    
+    def toSql(self):
+        self.getEvent()
+        self.df.to_sql('rough_upload', self.engine, if_exists='replace')
+    
+    def toS3(self):
+        pass
 
     def getEvent(self):
         super().getPage()
@@ -66,4 +82,5 @@ if __name__ == '__main__':
     print('#'*20)
     print(cal.wait)
     cal.getEvent()
+    cal.toSql()
     cal.quitScrap()
