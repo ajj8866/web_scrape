@@ -1,5 +1,7 @@
 from fileinput import close
 from lib2to3.pgen2 import driver
+from tkinter import E
+from numpy import var
 import requests
 from bs4 import BeautifulSoup
 import uuid
@@ -43,17 +45,21 @@ class EconCalScraper:
         op = webdriver.ChromeOptions()
         if headless == True:
             op.add_argument('--headless')
-        op.add_argument('--no-sandbox')
-        op.add_argument('--disable-dev-shm-usage')
-        op.add_argument("--window-size=1920,1080")
-        op.add_argument("--remote-debugging-port=9222")
+            op.add_argument('--no-sandbox')
+            op.add_argument('--disable-dev-shm-usage')
+            op.add_argument("--window-size=1920,1080")
+            #op.add_argument("--remote-debugging-port=9222")
         op.add_argument('--incognito')
         self.driver = Chrome(ChromeDriverManager().install(), options= op)
         self.driver.get(url)
         self.wait = WebDriverWait(self.driver, 15)
-        self.wait.until(EC.element_to_be_clickable((By.ID, 'dismissGdprConsentBannerBtn'))).click()
+        try:
+            self.wait.until(EC.element_to_be_clickable((By.ID, 'dismissGdprConsentBannerBtn'))).click()
+        except Exception as e:
+            print(e)
+            pass
         self.link_dict = [dict.fromkeys(['UUID', 'Links'])]
-        self.img_dict = [dict.fromkeys(['UUID', 'Image', 'Extension'])]
+        self.img_dict = {'UUID':[], 'Image':[], 'Extension':[]}
         time.sleep(1)
         self.getPage()
         self.mkPath()
@@ -106,12 +112,15 @@ class EconCalScraper:
         img_type = re.compile(f'{ext}$')
         for i in element:
             if re.findall(img_type, i.get_attribute('src')) != []:
-                print(i.get_attribute('src'))
-                self.img_dict.append({'UUID': str(uuid.uuid4()), 'Image' :i.get_attribute('src'), 'Extension': i.get_attribute('src').split('.')[-1]})
+                #print(i.get_attribute('src'))
+                self.img_dict['UUID'].append(str(uuid.uuid4()))
+                self.img_dict['Image'].append(i.get_attribute('src'))
+                self.img_dict['Extension'].append(i.get_attribute('src').split('.')[-1])
         #self.quitScrap()
-        self.img_dict = self.img_dict[1:]
-        print(self.img_dict)
+        #self.img_dict = self.img_dict[1:]
+        #print(self.img_dict)
         #elf.img_link_dict['Images'].extend(self.img)
+        self.archImg()
         return self.img_dict
 
     def addUUID(self, obj):
@@ -143,9 +152,9 @@ class EconCalScraper:
             os.mkdir(Path(Path.cwd(), 'Datapipe', 'raw_data'))
 
     def mkImgFold(self):
-        print('#'*20)
-        print(os.listdir(Path(Path.cwd(), 'Datapipe','raw_data')))
-        print('#'*20)
+        #print('#'*20)
+        #print(os.listdir(Path(Path.cwd(), 'Datapipe','raw_data')))
+        #print('#'*20)
         if 'images' not in os.listdir(Path(Path.cwd(), 'Datapipe','raw_data')):
             os.mkdir(Path(Path.cwd(), 'Datapipe', 'raw_data', 'images'))
     
@@ -166,18 +175,27 @@ class EconCalScraper:
                     img_file.write(resp_data)
 
     def archImg(self):
-        dum_img_list = []
-        dum_img_uuid = []
-        for i in self.img_dict:
-            dum_img_list.append(i['Image'])
-            dum_img_uuid.append(i['UUID'])
-        new_img_dict = {'Images': dum_img_list, 'UUID': dum_img_uuid}
-        with open(Path(Path.cwd(), 'Datapipe', 'raw_data', 'data.json'), 'a+') as f:
-            #temp_file = json.load(f)
-            #print(temp_file)
-            f.write(json.dumps(new_img_dict))
-            f.write('\n')
-            f.close()
+        with open(Path(Path.cwd(), 'Datapipe', 'raw_data', 'data.json'), 'r+') as f:
+            try:
+                pyfile = json.load(f)
+                print('#'*20)
+                print('VARP IS')
+                print(pyfile)
+                print('#'*20)
+                print(pyfile)
+                f.seek(0)
+                for uid_val, img_val, ext_val in zip(self.img_dict['UUID'], self.img_dict['Image'], self.img_dict['Extension']):
+                    #print(i)
+                    if uid_val not in pyfile['UUID']:
+                        pyfile['UUID'].append(uid_val)
+                        pyfile['Image'].append(img_val)
+                        pyfile['Extension'].append(ext_val)
+                json.dump(pyfile, f)
+                print(pyfile)
+            except Exception as e:
+                print(e)
+                json.dump(self.img_dict, f)
+        f.close()
 
     @property
     def tab(self):
@@ -187,7 +205,6 @@ class EconCalScraper:
     def tab(self, new_val):
         self._tab = new_val
 
-    
     @classmethod
     def allLinks(cls):
         time.sleep(5)
@@ -240,10 +257,16 @@ print(scraper.df.head())
 
 '''
 if __name__ == '__main__':
-    scraper = EconCalScraper(tab='econ_calendar')
+    scraper = EconCalScraper(tab='econ_calendar', headless=True)
     time.sleep(2)
     scraper.getImgs(ext='png')
     time.sleep(2)
-    scraper.uploadImg()
-    #scraper.archImg()
+    #scraper.uploadImg()
     scraper.quitScrap()
+    scraper2 = EconCalScraper(tab='sentiment')
+    scraper2.getImgs(ext='png')
+    #print(scraper.img_dict)
+    scraper2.quitScrap()
+    scraper3 = EconCalScraper(tab='spread')
+    scraper3.getImgs(ext='png')
+    scraper3.quitScrap()
