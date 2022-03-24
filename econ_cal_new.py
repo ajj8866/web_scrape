@@ -25,15 +25,6 @@ class newsCalendar(EconCalScraper):
         super().__init__(url, tab = newsCalendar.econ_tab)
         self.df = None
         self.data = [dict.fromkeys(['ID', 'Date', 'Time to Event', 'Country', 'Event', 'Impact', 'Previous', 'Consensus', 'Actual'])]
-        DATABASE_TYPE = 'postgresql'
-        DBAPI = 'psycopg2'
-        ENDPOINT = str(input('Enter endpoint'))
-        USER = 'postgres'
-        PASSWORD = input('Enter RDS password')
-        PORT = 5432
-        DATABASE = 'postgres'
-        self.engine = create_engine(f'{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{ENDPOINT}:{PORT}/{DATABASE}')
-        self.engine.connect()
 
     def getPage(self):
         return super().getPage()

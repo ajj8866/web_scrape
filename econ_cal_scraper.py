@@ -25,6 +25,7 @@ from urllib.request import urlretrieve
 import urllib
 from urllib import request
 from datetime import datetime as dt
+from aws_scraper import aws_rds, aws_s3_download, aws_s3_upload, aws_s3_upload_folder
 import shutil
 
 
@@ -58,6 +59,7 @@ class EconCalScraper:
         except Exception as e:
             print(e)
             pass
+        self.img_list = [dict.fromkeys(['UUID', 'Image', 'Extension'])]
         self.link_dict = [dict.fromkeys(['UUID', 'Links'])]
         self.img_dict = {'UUID':[], 'Image':[], 'Extension':[]}
         time.sleep(1)
@@ -112,16 +114,17 @@ class EconCalScraper:
         img_type = re.compile(f'{ext}$')
         for i in element:
             if re.findall(img_type, i.get_attribute('src')) != []:
+                self.img_list.append({'UUID': str(uuid.uuid4()), 'Image' :i.get_attribute('src'), 'Extension': i.get_attribute('src').split('.')[-1]})
                 #print(i.get_attribute('src'))
                 self.img_dict['UUID'].append(str(uuid.uuid4()))
                 self.img_dict['Image'].append(i.get_attribute('src'))
                 self.img_dict['Extension'].append(i.get_attribute('src').split('.')[-1])
         #self.quitScrap()
-        #self.img_dict = self.img_dict[1:]
-        #print(self.img_dict)
+        self.img_list = self.img_list[1:]
+        print(self.img_list)
         #elf.img_link_dict['Images'].extend(self.img)
         self.archImg()
-        return self.img_dict
+        return self.img_dict, self.img_list
 
     def addUUID(self, obj):
         uuid_ls = [uuid.uuid4() for i in range(len(obj))]
@@ -165,7 +168,11 @@ class EconCalScraper:
         num_list = []
         for j in os.listdir(Path(Path.cwd(), 'Datapipe', 'raw_data', 'images')):
             num_list.append(int(j.split('.')[0].zfill(4)))
-        for i, img_url in enumerate(self.img_dict, start=len(num_list)):
+        for i, img_url in enumerate(self.img_list, start=len(num_list)):
+            print(img_url)
+            print('#'*20)
+            print(img_url)
+            print('#'*20)
             if (img_url['Image'].split('.')[-1] in ['png']):
                 req = request.Request(img_url['Image'], headers=headers)
                 resp = request.urlopen(req)
@@ -178,14 +185,8 @@ class EconCalScraper:
         with open(Path(Path.cwd(), 'Datapipe', 'raw_data', 'data.json'), 'r+') as f:
             try:
                 pyfile = json.load(f)
-                print('#'*20)
-                print('VARP IS')
-                print(pyfile)
-                print('#'*20)
-                print(pyfile)
                 f.seek(0)
                 for uid_val, img_val, ext_val in zip(self.img_dict['UUID'], self.img_dict['Image'], self.img_dict['Extension']):
-                    #print(i)
                     if uid_val not in pyfile['UUID']:
                         pyfile['UUID'].append(uid_val)
                         pyfile['Image'].append(img_val)
@@ -260,6 +261,7 @@ if __name__ == '__main__':
     scraper = EconCalScraper(tab='econ_calendar', headless=True)
     time.sleep(2)
     scraper.getImgs(ext='png')
+    scraper.uploadImg()
     time.sleep(2)
     #scraper.uploadImg()
     scraper.quitScrap()
@@ -270,3 +272,5 @@ if __name__ == '__main__':
     scraper3 = EconCalScraper(tab='spread')
     scraper3.getImgs(ext='png')
     scraper3.quitScrap()
+    
+    #aws_s3_upload_folder()
