@@ -272,5 +272,5 @@ if __name__ == '__main__':
     scraper3 = EconCalScraper(tab='spread')
     scraper3.getImgs(ext='png')
     scraper3.quitScrap()
-    
+
     #aws_s3_upload_folder()

@@ -7,7 +7,6 @@ from sqlalchemy import create_engine
 import boto3
 from pathlib import Path
 import os
-import requests
 
 def aws_rds():
     DATABASE_TYPE = 'postgresql'
@@ -35,8 +34,10 @@ def ls_buckets():
         buck_ls.append(i)
     return buck_ls
 
-def aws_s3_upload_folder(path = Path(Path.cwd(), 'Datapipe', 'raw_data', 'images'), bucket_name = 'datapipelines3fx'):
-    s3 = boto3.client('s3')
+def aws_s3_upload_folder(bucket_name = 'datapipelines3fx', path = Path(Path.cwd(), 'Datapipe','raw_data', 'images')):#, bucket_name = 'datapipelines3fx', acc_inp = input('Enter access key id'), acc_sec = input('Enter secret access key')):
+    sess = boto3.client('s3')
     for i in os.listdir(path):
-        s3.upload_file(i, bucket_name, i)
-
+        home = Path(Path.home(), 'Downloads', 'AICore', 'Datapipe')
+        os.chdir(Path(Path.home(), 'Downloads', 'AICore','Datapipe','raw_data', 'images'))
+        sess.upload_file(i, bucket_name,i)
+        os.chdir(home)

@@ -1,2 +1,4 @@
 import os
-print(os.getcwd())
+from pathlib import Path
+
+print(Path(Path.cwd(), '..'))
