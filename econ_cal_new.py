@@ -99,7 +99,7 @@ class newsCalendar(EconCalScraper):
                     f.seek(0)
                     for id, uuid, dte, ttevent, ctry, ev, imp, pre, con, act  in zip(self.data_dict['ID'], self.data_dict['UUID'], self.data_dict['Date'], self.data_dict['Time to Event'], self.data_dict['Country'], self.data_dict['Event'], self.data_dict['Impact'], self.data_dict['Previous'], self.data_dict['Consensus'], self.data_dict['Actual']): #, self.data_dict['Formatted Date']):
                         #formd
-                        if id not in pyfile['UUID']:
+                        if id not in pyfile['ID']:
                             pyfile['ID'].append(id)
                             pyfile['UUID'].append(uuid)
                             pyfile['Date'].append(dte)
