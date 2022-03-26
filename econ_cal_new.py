@@ -26,7 +26,7 @@ import json
 class newsCalendar(EconCalScraper):
     econ_tab = 'econ_calendar'
     def __init__(self, url='https://www.myfxbook.com/'):
-        super().__init__(url, tab = newsCalendar.econ_tab)
+        super().__init__(url, headless=False, tab = newsCalendar.econ_tab)
         self.df = None
         data_keys = dict.fromkeys(['ID', 'Date', 'Time to Event', 'Country', 'Event', 'Impact', 'Previous', 'Consensus', 'Actual'])
         self.data = [dict.fromkeys(['ID', 'Date', 'Time to Event', 'Country', 'Event', 'Impact', 'Previous', 'Consensus', 'Actual'])]
@@ -97,7 +97,7 @@ class newsCalendar(EconCalScraper):
                 try:
                     pyfile = json.load(f)
                     f.seek(0)
-                    for id, uuid, dte, ttevent, ctry, ev, imp, pre, con, act  in zip(self.dat_dict['ID'], self.data_dict['UUID'], self.img_dict['Date'], self.data_dict['Time to Event'], self.data_dict['Country'], self.data_dict['Event'], self.data_dict['Impact'], self.data_dict['Previous'], self.data_dict['Consensus'], self.data_dict['Actual']): #, self.data_dict['Formatted Date']):
+                    for id, uuid, dte, ttevent, ctry, ev, imp, pre, con, act  in zip(self.data_dict['ID'], self.data_dict['UUID'], self.data_dict['Date'], self.data_dict['Time to Event'], self.data_dict['Country'], self.data_dict['Event'], self.data_dict['Impact'], self.data_dict['Previous'], self.data_dict['Consensus'], self.data_dict['Actual']): #, self.data_dict['Formatted Date']):
                         #formd
                         if id not in pyfile['UUID']:
                             pyfile['ID'].append(id)
@@ -111,10 +111,14 @@ class newsCalendar(EconCalScraper):
                             pyfile['Consensus'].append(con)
                             pyfile['Actual'].append(act)
                             #pyfile['Formatted Date'].append(formd)
+                    f.seek(0)
                     json.dump(pyfile, f)
                     print(pyfile)
                 except Exception as e:
+                    print('Exception')
                     print(e)
+                    print('yeah excep')
+                    f.seek(0)
                     json.dump(self.data_dict, f)
             f.close()
 
