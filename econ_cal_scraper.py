@@ -67,6 +67,9 @@ class EconCalScraper:
         self.mkPath()
 
     def getPage(self):
+        '''
+        Method used on instantiation to navigate to selected tab as specified in tab argument
+        '''
         if self._tab == 'econ_calendar':
             self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-economic-calendar"]'))).click()
             print('Curent name; ', __name__)
@@ -90,6 +93,9 @@ class EconCalScraper:
             self.popupEsc()
 
     def popupEsc(self):
+        '''
+        Also applied on instantiation. Refreshes page so that pop add which shows up shortly after navigating to any given tab is removed
+        '''
         wait = WebDriverWait(self.driver, 15)
         time.sleep(2)
         self.driver.refresh()
@@ -100,6 +106,9 @@ class EconCalScraper:
             pass
     
     def quitScrap(self):
+        '''
+        Closes chrome window and quits driver
+        '''
         time.sleep(1)
         self.driver.close()
         self.driver.quit()
@@ -108,6 +117,9 @@ class EconCalScraper:
         return str(self.driver.current_url)
     
     def getImgs(self, ext = ''):
+        '''
+
+        '''
         print(self.driver.current_url)
         time.sleep(2)
         element = self.driver.find_elements(By.XPATH, '//img')
@@ -127,10 +139,16 @@ class EconCalScraper:
         return self.img_dict, self.img_list
 
     def addUUID(self, obj):
-        uuid_ls = [uuid.uuid4() for i in range(len(obj))]
+        '''
+        Convenience method used to append a UUID to each indvidual observation for other methods
+        '''
+        uuid_ls = [str(uuid.uuid4()) for i in range(len(obj))]
         return uuid_ls
 
     def getLinks(self):
+        '''
+
+        '''
         print('Current Page URL: ',self.driver.current_url)
         time.sleep(5)
         element = self.driver.find_elements(By.XPATH, '//a')
@@ -151,6 +169,9 @@ class EconCalScraper:
         return self.link_dict
     
     def mkPath(self):
+        '''
+        Makes raw_data folder for storing json files should the folder not already exist
+        '''
         if 'raw_data' not in os.listdir(Path(Path.cwd(), 'Datapipe')):
             os.mkdir(Path(Path.cwd(), 'Datapipe', 'raw_data'))
 
@@ -162,6 +183,9 @@ class EconCalScraper:
             os.mkdir(Path(Path.cwd(), 'Datapipe', 'raw_data', 'images'))
     
     def uploadImg(self):
+        '''
+        Uploads image onto images subfolder within raw_data folder
+        '''
         self.mkImgFold()
         headers = {}
         headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'
@@ -182,6 +206,9 @@ class EconCalScraper:
                     img_file.write(resp_data)
 
     def archImg(self):
+        '''
+        Stores individual image links into a json file
+        '''
         with open(Path(Path.cwd(), 'Datapipe', 'raw_data', 'data.json'), 'r+') as f:
             try:
                 pyfile = json.load(f)
@@ -208,6 +235,11 @@ class EconCalScraper:
 
     @classmethod
     def allLinks(cls):
+        '''
+        Given nature of data the number of images on any given page insufficient to meet criteria specified in tasks.
+
+        This class method aggregates images stored across all tabs on Myfxbook site storing the images in a list 
+        '''
         time.sleep(5)
         link_list = []
         for i in ['econ_calendar','fin_cal','news','spread','sentiment','heatmap','correlation']:

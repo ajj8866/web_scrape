@@ -28,26 +28,13 @@ class newsCalendar(EconCalScraper):
     def __init__(self, url='https://www.myfxbook.com/'):
         super().__init__(url, headless=False, tab = newsCalendar.econ_tab)
         self.df = None
-        data_keys = dict.fromkeys(['ID', 'Date', 'Time to Event', 'Country', 'Event', 'Impact', 'Previous', 'Consensus', 'Actual'])
+        #data_keys = dict.fromkeys(['ID', 'Date', 'Time to Event', 'Country', 'Event', 'Impact', 'Previous', 'Consensus', 'Actual'])
         self.data = [dict.fromkeys(['ID', 'Date', 'Time to Event', 'Country', 'Event', 'Impact', 'Previous', 'Consensus', 'Actual'])]
         self.data_dict = None
     
     def transformData(self):
-        id_ls, uuid_ls, date_ls, tte_ls, ctry_ls, ev_ls, imp_ls, prev_ls, cons_ls, act_ls, tm_ls = [], [],[], [], [], [], [], [], [], [], []
-        data_dict = dict(self.df)
-        for i in range(len(self.df)):
-            id_ls.append(self.df['ID'].iloc[i])
-            uuid_ls.append(str(self.df['UUID'].iloc[i]))
-            date_ls.append(self.df['Date'].iloc[i])
-            tte_ls.append(self.df['Time to Event'].iloc[i])
-            ctry_ls.append(self.df['Country'].iloc[i])
-            ev_ls.append(self.df['Event'].iloc[i])
-            imp_ls.append(self.df['Impact'].iloc[i])
-            prev_ls.append(self.df['Previous'].iloc[i])
-            cons_ls.append(self.df['Consensus'].iloc[i])
-            act_ls.append(self.df['Actual'].iloc[i])
-            #tm_ls.append(self.df['Formatted Date'].iloc[i])
-        self.data_dict = {'ID': id_ls, 'UUID': uuid_ls, 'Date': date_ls, 'Time to Event': tte_ls, 'Country': ctry_ls, 'Event': ev_ls, 'Impact': imp_ls, 'Previous': prev_ls, 'Consensus': cons_ls, 'Actual': act_ls} #, 'Formatted Date': tm_ls}
+        self.data_dict = {key: [dic[key] for dic in self.data] for key in self.data[0]}
+        print()
         print('#'*20)
         print(self.df['ID'].iloc[0])
         print('#'*20)
@@ -77,13 +64,15 @@ class newsCalendar(EconCalScraper):
             print(dum_ls)
             self.data.append({'ID': int(dum_ls[0]), 'Date': dum_ls[1], 'Time to Event': dum_ls[2], 'Country': dum_ls[4], 'Event': dum_ls[5], 'Impact': dum_ls[6], 'Previous': dum_ls[7], 'Consensus': dum_ls[8], 'Actual': dum_ls[9]})
         self.df = pd.DataFrame(self.data)
+        print(self.df.head())
         self.df['UUID'] = self.addUUID(obj=self.df)
-        #self.df.set_index(['ID', 'UUID'], inplace=True)
-        #self.df['Formatted Date'] = self.df['Date'].apply(lambda i: dt.strptime(i, "%B %d, %H:%M"))
         self.df = self.df.iloc[1:]
         self.df['Date'] = self.df['Date'].apply(lambda i: i + ' 2022')
         self.df['Formatted Date'] = self.df['Date'].apply(lambda i: dt.strptime(i, '%b %d, %H:%M %Y'))
         print(self.df)
+        df_dum = self.df.copy()
+        df_dum['Formatted Date'] = df_dum['Formatted Date'].dt.strftime('%Y-%m-%d %H:%M:%S')
+        self.data = df_dum.to_dict(orient = 'records')
         return self.df, self.data
 
     def calData(self):
@@ -97,7 +86,7 @@ class newsCalendar(EconCalScraper):
                 try:
                     pyfile = json.load(f)
                     f.seek(0)
-                    for id, uuid, dte, ttevent, ctry, ev, imp, pre, con, act  in zip(self.data_dict['ID'], self.data_dict['UUID'], self.data_dict['Date'], self.data_dict['Time to Event'], self.data_dict['Country'], self.data_dict['Event'], self.data_dict['Impact'], self.data_dict['Previous'], self.data_dict['Consensus'], self.data_dict['Actual']): #, self.data_dict['Formatted Date']):
+                    for id, uuid, dte, ttevent, ctry, ev, imp, pre, con, act, formd  in zip(self.data_dict['ID'], self.data_dict['UUID'], self.data_dict['Date'], self.data_dict['Time to Event'], self.data_dict['Country'], self.data_dict['Event'], self.data_dict['Impact'], self.data_dict['Previous'], self.data_dict['Consensus'], self.data_dict['Actual'], self.data_dict['Formatted Date']): #, self.data_dict['Formatted Date']):
                         #formd
                         if id not in pyfile['ID']:
                             pyfile['ID'].append(id)
@@ -110,7 +99,7 @@ class newsCalendar(EconCalScraper):
                             pyfile['Previous'].append(pre)
                             pyfile['Consensus'].append(con)
                             pyfile['Actual'].append(act)
-                            #pyfile['Formatted Date'].append(formd)
+                            pyfile['Formatted Date'].append(formd.strftime('%Y-%m-%d'))
                     f.seek(0)
                     json.dump(pyfile, f)
                     print(pyfile)
