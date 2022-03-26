@@ -1,7 +1,11 @@
 # Web Scraper (Myfxbook and Crunchyroll)
 
 ## Note 
-Initial website of choice was Crunchyroll given presence of capcha had to use another website for the purposes of scraping data. However, my alternative website (Myfxbook) didn't have a conventional cookies button so please refer to file scraper_class.py for milestones  and 2 while econ_cal_scraper.py, test_econ_cal_scraper.py and econ_cal_new.py for the remainder of the tasks 
+Initial website of choice was Crunchyroll given presence of capcha had to use another website for the purposes of scraping data. However, my alternative website (Myfxbook) didn't have a conventional cookies button so please refer to file scraper_class.py for milestones  and 2 while econ_cal_scraper.py, test_econ_cal_scraper.py and econ_cal_new.py for the remainder of the tasks. 
+
+<u>econ_cal_scraper.py</u>: Provides methods for getting links, images, navigating across tabs and uploading image to s3 bucket and RDS, given primary data of choice is in tabular form and does not contain any images
+
+<u>econ_cal_new.py</u>: Contains tabular data with ID column taken to unique identifier for any upcoming news announcement 
 
 ## Crunchyroll Webscraper
 Site used is [crunchyroll](https://www.crunchyroll.com/en-gb), a streaming service for watching anime.
@@ -35,3 +39,10 @@ Financial news blog providing news, analysis and calendar updates on factors imp
 
 #### <u>econ_cal_new.py</u> 
 Class inheriting from econ_cal_scraper. Navigates specifically to economic calendar tab and getEvent tab is subsequently used to encapsulate the each piece of economic news into a dataframe containing columns ID (using uuid4), Date, Formatted date (to allow for filtering), Time to Event, Country, Event, Impact (high, medium or low), Consensus (analyst estimate of any figure), Actual (actual value of any financial figure) 
+
+| Method | Method Description |
+| :-- | :-- |
+| __init__ | In addition to data inherited from parent class instantiates an empty dataframe for storing variables in tabular form, a list of dictionaries with each dictionary storing a single observation variables and a dictionary of lists with each list containing all observations corresponding to a given column header. Both the list of dictionaries and dictionaries store identical differing only insofar as their convenience for different purposes; storing data in a dataframe and in a json file. |
+| getEvent | Uses beautifulsoup and selenium to scrape data in the news page storing such data in a dataframe and a list of dictionaries, appending a UUID and a formatted data variable, using datetime's strptime function for convenience in using pandas functions should the need arise |
+| transformData | Converts list of dictionaries, self.data, into dictionary of lists, self.data_dict |
+| calData | Stores scraped data in json file, newws_data.json |
