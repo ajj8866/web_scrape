@@ -33,12 +33,13 @@ class newsCalendar(EconCalScraper):
         self.data_dict = None
     
     def transformData(self):
+        '''
+        Converts list of dictionaries into dictionary of list 
+        '''
+        time.sleep(2)
+        self.getEvent()
         self.data_dict = {key: [dic[key] for dic in self.data] for key in self.data[0]}
-        print()
-        print('#'*20)
-        print(self.df['ID'].iloc[0])
-        print('#'*20)
-        print(self.data_dict)
+        return self.data_dict
         
     def getPage(self):
         return super().getPage()
@@ -48,36 +49,34 @@ class newsCalendar(EconCalScraper):
         time.sleep(2)
         ls = []
         soup = BeautifulSoup(requests.get(self.driver.current_url).content, 'html.parser')
-        print(self.driver.current_url)
-        #print(soup.prettify())
         table_row = soup.find_all('tr', id = re.compile(r'calRow\d*')) 
-        print(table_row)
         for i in table_row:
             dum_ls = []
-            print(i['data-row-id'])
+            #print(i['data-row-id'])
             dum_ls.append(i['data-row-id'])
-            print(len(soup.find_all('td', class_ = 'calendarToggleCell')))
+            #print(len(soup.find_all('td', class_ = 'calendarToggleCell')))
             for j in i.find_all('td', class_ = 'calendarToggleCell'):
-                print(j.get_text().strip())
+                #print(j.get_text().strip())
                 dum_ls.append(j.get_text().strip())
                 ls.append(dum_ls)
-            print(dum_ls)
+                print(dum_ls[1])
             self.data.append({'ID': int(dum_ls[0]), 'Date': dum_ls[1], 'Time to Event': dum_ls[2], 'Country': dum_ls[4], 'Event': dum_ls[5], 'Impact': dum_ls[6], 'Previous': dum_ls[7], 'Consensus': dum_ls[8], 'Actual': dum_ls[9]})
         self.df = pd.DataFrame(self.data)
-        print(self.df.head())
         self.df['UUID'] = self.addUUID(obj=self.df)
         self.df = self.df.iloc[1:]
         self.df['Date'] = self.df['Date'].apply(lambda i: i + ' 2022')
         self.df['Formatted Date'] = self.df['Date'].apply(lambda i: dt.strptime(i, '%b %d, %H:%M %Y'))
-        print(self.df)
+        self.df.drop_duplicates(subset = ['ID'], keep = 'last', inplace = True)
         df_dum = self.df.copy()
         df_dum['Formatted Date'] = df_dum['Formatted Date'].dt.strftime('%Y-%m-%d %H:%M:%S')
+        print(self.df.iloc[-10:])
         self.data = df_dum.to_dict(orient = 'records')
         return self.df, self.data
 
     def calData(self):
+        time.sleep(2)
+        self.transformData()
         json_cal = Path(Path.cwd(), 'Datapipe', 'raw_data', 'news_data.json')
-        print(json_cal.exists)
         if json_cal.is_file() == False:
             with open(json_cal, 'w') as fw:
                 json.dump(self.data_dict, fw)
@@ -102,11 +101,9 @@ class newsCalendar(EconCalScraper):
                             pyfile['Formatted Date'].append(formd.strftime('%Y-%m-%d'))
                     f.seek(0)
                     json.dump(pyfile, f)
-                    print(pyfile)
                 except Exception as e:
-                    print('Exception')
+                    print('JSON file currently empty so dumping all observations')
                     print(e)
-                    print('yeah excep')
                     f.seek(0)
                     json.dump(self.data_dict, f)
             f.close()
@@ -118,10 +115,14 @@ if __name__ == '__main__':
     cal = newsCalendar()
     print(cal._tab)
     print('#'*20)
-    print(cal.wait)
-    cal.getEvent()
-    #cal.toSql()
-    cal.transformData()
-    time.sleep(2)
     cal.calData()
+    print('#'*20)
+    print(cal.data)
+    print('#'*20)
+    print(cal.df.head())
+    print('#'*20)
+    print(cal.data_dict)
+    print('#'*20)
+    print(len(cal.data))
+    print(len(cal.df))
     cal.quitScrap()

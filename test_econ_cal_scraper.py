@@ -34,9 +34,9 @@ class EconCalScraperTestCase(unittest.TestCase):
         self.assertTrue(os.path.exists(Path(Path.cwd(), 'Datapipe','raw_data')))
 
     def test_getImgs(self):
-        self.assertIsInstance(self.fin_cal.img_dict, list)
-        self.assertIsInstance(self.sentiment.img_dict, list)
-        self.assertIsInstance(self.heatmap.img_dict, list)
+        self.assertIsInstance(self.fin_cal.img_dict, dict)
+        self.assertIsInstance(self.sentiment.img_dict, dict)
+        self.assertIsInstance(self.heatmap.img_dict, dict)
 
 #    def test_getLinks(self):
 #        pass
