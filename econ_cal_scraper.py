@@ -9,6 +9,7 @@ from selenium import webdriver
 from selenium.webdriver import Chrome
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -48,11 +49,13 @@ class EconCalScraper:
             op.add_argument('--headless')
             op.add_argument('--no-sandbox')
             op.add_argument('--disable-dev-shm-usage')
+            #op.add_argument("--window-size=1024,768")
             op.add_argument("--window-size=1920,1080")
-            op.add_argument("--remote-debugging-port=9222")
+            #op.add_argument("--remote-debugging-port=9222")
         op.add_argument('--incognito')
         self.driver = Chrome(ChromeDriverManager().install(), options= op)
         self.driver.get(url)
+        #self.driver.maximize_window()
         self.wait = WebDriverWait(self.driver, 15)
         try:
             self.wait.until(EC.element_to_be_clickable((By.ID, 'dismissGdprConsentBannerBtn'))).click()
@@ -71,26 +74,41 @@ class EconCalScraper:
         Method used on instantiation to navigate to selected tab as specified in tab argument
         '''
         if self._tab == 'econ_calendar':
-            self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-economic-calendar"]'))).click()
+            #self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-economic-calendar"]'))).click()
+            self.actionChainClick(self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-economic-calendar"]'))))
             print('Curent name; ', __name__)
             self.popupEsc()
         elif self._tab == 'fin_cal':
-            self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-calculators"]'))).click()
+            #self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-calculators"]'))).click()
+            self.actionChainClick(self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-calculators"]'))))
             self.popupEsc()
         elif self._tab == 'news':
-            self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-news"]'))).click()
+            #self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-news"]'))).click()
+            self.actionChainClick(self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-news"]'))))
             self.popupEsc()
         elif self._tab == 'spread':
-            self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-spreads"]'))).click()
+            #self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-spreads"]'))).click()
+            self.actionChainClick(self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-spreads"]'))))
             self.popupEsc()
         elif self._tab == 'sentiment':
-            self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-outlook"]'))).click()
+            #self.wait.until(EC.presence_of_element_located((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-outlook"]'))).click()
+            self.actionChainClick(self.wait.until(EC.presence_of_element_located((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-outlook"]'))))
+            self.popupEsc()
         elif self._tab == 'heatmap':
-            self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-heatmap"]'))).click()
+            #self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-heatmap"]'))).click()
+            self.actionChainClick(self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-heatmap"]'))))
             self.popupEsc()
         elif self._tab == 'correlation':
-            self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-correlation"]'))).click()
+            #self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-correlation"]'))).click()
+            self.actionChainClick(self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-correlation"]'))))
             self.popupEsc()
+
+    def actionChainClick(self, el):
+        actions = ActionChains(self.driver)
+        actions.move_to_element(el)
+        #actions.click(el)
+        actions.click()
+        actions.perform()
 
     def popupEsc(self):
         '''
@@ -172,15 +190,15 @@ class EconCalScraper:
         '''
         Makes raw_data folder for storing json files should the folder not already exist
         '''
-        if 'raw_data' not in os.listdir(Path(Path.cwd(), 'Datapipe')):
-            os.mkdir(Path(Path.cwd(), 'Datapipe', 'raw_data'))
+        if 'raw_data' not in os.listdir(Path(Path.cwd())):
+            os.mkdir(Path(Path.cwd(), 'raw_data'))
 
     def mkImgFold(self):
         #print('#'*20)
         #print(os.listdir(Path(Path.cwd(), 'Datapipe','raw_data')))
         #print('#'*20)
-        if 'images' not in os.listdir(Path(Path.cwd(), 'Datapipe','raw_data')):
-            os.mkdir(Path(Path.cwd(), 'Datapipe', 'raw_data', 'images'))
+        if 'images' not in os.listdir(Path(Path.cwd(), 'raw_data')):
+            os.mkdir(Path(Path.cwd(), 'raw_data', 'images'))
     
     def uploadImg(self):
         '''
@@ -190,7 +208,7 @@ class EconCalScraper:
         headers = {}
         headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.157 Safari/537.36'
         num_list = []
-        for j in os.listdir(Path(Path.cwd(), 'Datapipe', 'raw_data', 'images')):
+        for j in os.listdir(Path(Path.cwd(), 'raw_data', 'images')):
             num_list.append(int(j.split('.')[0].zfill(4)))
         for i, img_url in enumerate(self.img_list, start=len(num_list)):
             print(img_url)
@@ -202,14 +220,14 @@ class EconCalScraper:
                 resp = request.urlopen(req)
                 resp_data_byte = resp.read()  #.decode('utf-8')
                 resp_data = resp_data_byte #.decode('utf-8')
-                with open(Path(Path.cwd(), 'Datapipe', 'raw_data', 'images', f'{i}.png'), 'wb') as img_file:
+                with open(Path(Path.cwd(), 'raw_data', 'images', f'{i}.png'), 'wb') as img_file:
                     img_file.write(resp_data)
 
     def archImg(self):
         '''
         Stores individual image links into a json file
         '''
-        with open(Path(Path.cwd(), 'Datapipe', 'raw_data', 'data.json'), 'r+') as f:
+        with open(Path(Path.cwd(), 'raw_data', 'data.json'), 'r+') as f:
             try:
                 pyfile = json.load(f)
                 f.seek(0)
@@ -290,18 +308,18 @@ print(scraper.df.head())
 
 '''
 if __name__ == '__main__':
-    # scraper = EconCalScraper(tab='econ_calendar', headless=True)
-    # time.sleep(2)
-    # scraper.getImgs(ext='png')
-    # scraper.uploadImg()
-    # time.sleep(2)
-    # #scraper.uploadImg()
-    # scraper.quitScrap()
-    scraper2 = EconCalScraper(tab='sentiment', headless=True)
+    scraper = EconCalScraper(tab='econ_calendar', headless=True)
     time.sleep(2)
-    scraper2.getImgs(ext='png')
+    scraper.getImgs(ext='png')
+    scraper.uploadImg()
+    time.sleep(2)
+    #scraper.uploadImg()
+    scraper.quitScrap()
+    #scraper2 = EconCalScraper(tab='sentiment', headless=True)
+    #time.sleep(2)
+    #scraper2.getImgs(ext='png')
     #print(scraper.img_dict)
-    scraper2.quitScrap()
+    #scraper2.quitScrap()
     # scraper3 = EconCalScraper(tab='spread')
     # scraper3.getImgs(ext='png')
     # scraper3.quitScrap()
