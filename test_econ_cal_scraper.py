@@ -38,6 +38,8 @@ class EconCalScraperTestCase(unittest.TestCase):
         self.assertIsInstance(self.sentiment.img_dict, dict)
         self.assertIsInstance(self.heatmap.img_dict, dict)
 
+        self.assertIsInstance(self.heatmap.img_list, list)
+
 #    def test_getLinks(self):
 #        pass
 

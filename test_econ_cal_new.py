@@ -21,7 +21,7 @@ class newsCalendarTestCase(unittest.TestCase):
         x = self.calendar.getEvent()
         #y = self.calendar.getEvent()[1]
         print(x[0])
-        self.assertEqual(len(self.calendar.getEvent()[0]), len(self.calendar.getEvent()[1]))
+        self.assertEqual(len(x[0]), len(x[1]))
 
     def test_transformData(self):
         self.assertIsInstance(self.calendar2.transformData(), dict)
