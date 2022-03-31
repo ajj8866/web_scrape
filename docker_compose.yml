@@ -1,0 +1,6 @@
+version: '3'
+services:
+  myfx_container:
+    image: 'myfx'
+    volumes:
+      - .:/app

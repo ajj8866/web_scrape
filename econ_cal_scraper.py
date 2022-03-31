@@ -1,6 +1,6 @@
 from fileinput import close
 from lib2to3.pgen2 import driver
-from tkinter import E
+from tkinter import E, N
 from numpy import var
 import requests
 from bs4 import BeautifulSoup
@@ -51,11 +51,12 @@ class EconCalScraper:
             op.add_argument('--disable-dev-shm-usage')
             #op.add_argument("--window-size=1024,768")
             op.add_argument("--window-size=1920,1080")
-            #op.add_argument("--remote-debugging-port=9222")
-        op.add_argument('--incognito')
+            op.add_argument("--remote-debugging-port=9222")
+        #op.add_argument('--incognito')
         self.driver = Chrome(ChromeDriverManager().install(), options= op)
         self.driver.get(url)
-        #self.driver.maximize_window()
+        self.driver.maximize_window()
+        self.driver.save_screenshot('scrn.png')
         self.wait = WebDriverWait(self.driver, 15)
         try:
             self.wait.until(EC.element_to_be_clickable((By.ID, 'dismissGdprConsentBannerBtn'))).click()
@@ -68,11 +69,17 @@ class EconCalScraper:
         time.sleep(1)
         self.getPage()
         self.mkPath()
+        
 
-    def getPage(self):
+    def getPage(self, toggle = input('Toggle cell?')):
         '''
         Method used on instantiation to navigate to selected tab as specified in tab argument
         '''
+        if toggle == 'yes'.lower():
+            self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'a.menu-toggler'))).click()
+            self.driver.save_screenshot('src_2.png')
+        else:
+            pass
         if self._tab == 'econ_calendar':
             #self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-economic-calendar"]'))).click()
             self.actionChainClick(self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-economic-calendar"]'))))
@@ -313,7 +320,7 @@ if __name__ == '__main__':
     scraper.getImgs(ext='png')
     scraper.uploadImg()
     time.sleep(2)
-    #scraper.uploadImg()
+    scraper.uploadImg()
     scraper.quitScrap()
     #scraper2 = EconCalScraper(tab='sentiment', headless=True)
     #time.sleep(2)

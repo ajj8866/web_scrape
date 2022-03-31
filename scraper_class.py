@@ -14,13 +14,22 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time
 
 class aniScraper:
-    def __init__(self, url = 'https://www.crunchyroll.com', tab = 'popular'):
+    def __init__(self, url = 'https://www.crunchyroll.com', tab = 'popular', headless = True):
         self.tab = tab
         self.url = url
         op = webdriver.ChromeOptions()
+        if headless == True:
+            op.add_argument('--headless')
+            op.add_argument('--no-sandbox')
+            op.add_argument('--disable-dev-shm-usage')
+            #op.add_argument("--window-size=1024,768")
+            op.add_argument("--window-size=1920,1080")
+            op.add_argument("--remote-debugging-port=9222")
+        #op.add_argument('--incognito')
         #op.add_argument('--incognito')
         self.driver = Chrome(ChromeDriverManager().install(), options= op)
         self.driver.get(url)
+        self.driver.maximize_window()
         self.accRejCookies()
         wait = WebDriverWait(self.driver, 10)
         wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div.opt-in > button.opt-in__close'))).click()
@@ -101,15 +110,15 @@ class aniScraper:
 
 
 
-
-sc = aniScraper(tab='alphabet')
-#print(sc)
-sc.getAlphaPg(letter='b')
-time.sleep(3)
-sc.filterGenre(genre=['action', 'mecha', 'music', 'mystery'])
-time.sleep(3)
-sc.getWebpage()
-time.sleep(2)
-sc.quitDriver()
+if __name__ == '__main__':
+    sc = aniScraper(tab='alphabet')
+    #print(sc)
+    sc.getAlphaPg(letter='b')
+    time.sleep(3)
+    sc.filterGenre(genre=['action', 'mecha', 'music', 'mystery'])
+    time.sleep(3)
+    sc.getWebpage()
+    time.sleep(2)
+    sc.quitDriver()
 
 #print(BeautifulSoup(requests.get('https://www.crunchyroll.com/en-gb/videos/anime/genres/sci-fi#/videos/anime/genres/sci-fi,supernatural')))
