@@ -1,7 +1,3 @@
-from fileinput import close
-from lib2to3.pgen2 import driver
-from tkinter import E, N
-from numpy import var
 import requests
 from bs4 import BeautifulSoup
 import uuid
@@ -67,7 +63,9 @@ class EconCalScraper:
         self.link_dict = [dict.fromkeys(['UUID', 'Links'])]
         self.img_dict = {'UUID':[], 'Image':[], 'Extension':[]}
         time.sleep(1)
+        print(1)
         self.getPage()
+        print(11)
         self.mkPath()
         
 
@@ -76,11 +74,13 @@ class EconCalScraper:
         Method used on instantiation to navigate to selected tab as specified in tab argument
         '''
         if toggle == 'yes'.lower():
+            print(2)
             self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'a.menu-toggler'))).click()
             self.driver.save_screenshot('src_2.png')
         else:
             pass
         if self._tab == 'econ_calendar':
+            print(3)
             #self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-economic-calendar"]'))).click()
             self.actionChainClick(self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-economic-calendar"]'))))
             print('Curent name; ', __name__)
@@ -322,13 +322,13 @@ if __name__ == '__main__':
     time.sleep(2)
     scraper.uploadImg()
     scraper.quitScrap()
-    #scraper2 = EconCalScraper(tab='sentiment', headless=True)
-    #time.sleep(2)
-    #scraper2.getImgs(ext='png')
-    #print(scraper.img_dict)
-    #scraper2.quitScrap()
-    # scraper3 = EconCalScraper(tab='spread')
-    # scraper3.getImgs(ext='png')
-    # scraper3.quitScrap()
+    scraper2 = EconCalScraper(tab='sentiment', headless=True)
+    time.sleep(2)
+    scraper2.getImgs(ext='png')
+    print(scraper.img_dict)
+    scraper2.quitScrap()
+    scraper3 = EconCalScraper(tab='spread')
+    scraper3.getImgs(ext='png')
+    scraper3.quitScrap()
 
     #aws_s3_upload_folder()
