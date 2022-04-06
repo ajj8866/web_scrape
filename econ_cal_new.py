@@ -26,9 +26,8 @@ import json
 class newsCalendar(EconCalScraper):
     econ_tab = 'econ_calendar'
     def __init__(self, url='https://www.myfxbook.com/'):
-        super().__init__(url, headless=False, tab = newsCalendar.econ_tab)
+        super().__init__(url, headless=True, tab = newsCalendar.econ_tab)
         self.df = None
-        #data_keys = dict.fromkeys(['ID', 'Date', 'Time to Event', 'Country', 'Event', 'Impact', 'Previous', 'Consensus', 'Actual'])
         self.data = [dict.fromkeys(['ID', 'Date', 'Time to Event', 'Country', 'Event', 'Impact', 'Previous', 'Consensus', 'Actual'])]
         self.data_dict = None
     
@@ -76,7 +75,7 @@ class newsCalendar(EconCalScraper):
     def calData(self):
         time.sleep(2)
         self.transformData()
-        json_cal = Path(Path.cwd(), 'Datapipe', 'raw_data', 'news_data.json')
+        json_cal = Path(Path.cwd(), 'raw_data', 'news_data.json')
         if json_cal.is_file() == False:
             with open(json_cal, 'w') as fw:
                 json.dump(self.data_dict, fw)
