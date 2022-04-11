@@ -136,7 +136,9 @@ class EconCalScraper:
     
     def getImgs(self, ext = ''):
         '''
-
+        Yields imags ending with extension as set by ext argument:
+        ext = jpg/png or any other valid extension used for images. If set as '' or not specified all images
+              scrapped
         '''
         print(self.driver.current_url)
         time.sleep(2)
@@ -165,7 +167,7 @@ class EconCalScraper:
 
     def getLinks(self):
         '''
-
+        Yields all links existing on chosen tab 
         '''
         print('Current Page URL: ',self.driver.current_url)
         time.sleep(5)
@@ -194,6 +196,9 @@ class EconCalScraper:
             os.mkdir(Path(Path.cwd(), 'raw_data'))
 
     def mkImgFold(self):
+        '''
+        Makes image folder within workding directory if it doesn't already exist
+        '''
         #print('#'*20)
         #print(os.listdir(Path(Path.cwd(), 'Datapipe','raw_data')))
         #print('#'*20)

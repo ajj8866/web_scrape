@@ -25,11 +25,29 @@ import json
 
 class newsCalendar(EconCalScraper):
     econ_tab = 'econ_calendar'
-    def __init__(self, url='https://www.myfxbook.com/'):
+    def __init__(self, url='https://www.myfxbook.com/', start_engine = False):
+        '''
+        Addtion of an empty dictionary of keys to comprise of data scrapped in methods within childlcass
+        If start_engine parameter set to true connection to RDS instance established and toSql method may 
+        be used
+
+        '''
         super().__init__(url, headless=True, tab = newsCalendar.econ_tab)
         self.df = None
         self.data = [dict.fromkeys(['ID', 'Date', 'Time to Event', 'Country', 'Event', 'Impact', 'Previous', 'Consensus', 'Actual'])]
         self.data_dict = None
+        # SQL/RDS Parameters
+        self.start_engine = start_engine
+        if start_engine == True:
+            DATABASE_TYPE = 'postgresql'
+            DBAPI = 'psycopg2'
+            ENDPOINT = str(input('Enter endpoint'))
+            USER = 'postgres'
+            PASSWORD = input('Enter RDS password')
+            PORT = 5432
+            DATABASE = 'postgres'
+            self.engine = create_engine(f'{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{ENDPOINT}:{PORT}/{DATABASE}')
+            self.engine.connect()
     
     def transformData(self):
         '''
@@ -39,11 +57,26 @@ class newsCalendar(EconCalScraper):
         self.getEvent()
         self.data_dict = {key: [dic[key] for dic in self.data] for key in self.data[0]}
         return self.data_dict
+
+    def toSql(self):
+        '''
+        Calls getEvent method prior to uploading data yielded from getEvent method onto 
+        RDS instance
+        '''
+        if self.start_engine == True:
+            self.getEvent()
+            self.df.to_sql('rough_upload', self.engine, if_exists='replace')
+        else:
+            print('SQL engine not connected on instantiation')
         
     def getPage(self):
         return super().getPage()
 
     def getEvent(self):
+        '''
+        Iterates through all rows in table on page, storing the data as values for the dictionary set on
+        instantiation and converted to a dataframe 
+        '''
         super().getPage()
         time.sleep(2)
         ls = []
@@ -73,6 +106,9 @@ class newsCalendar(EconCalScraper):
         return self.df, self.data
 
     def calData(self):
+        '''
+        Appends new observations (using ID as unique key) onto json file news_data.json
+        '''
         time.sleep(2)
         self.transformData()
         json_cal = Path(Path.cwd(), 'raw_data', 'news_data.json')
@@ -110,18 +146,28 @@ class newsCalendar(EconCalScraper):
 
 
 if __name__ == '__main__':
+    # print('#'*20)
+    # cal = newsCalendar()
+    # print(cal._tab)
+    # print('#'*20)
+    # cal.calData()
+    # print('#'*20)
+    # print(cal.data)
+    # print('#'*20)
+    # print(cal.df.head())
+    # print('#'*20)
+    # print(cal.data_dict)
+    # print('#'*20)
+    # print(len(cal.data))
+    # print(len(cal.df))
+    # cal.quitScrap()
+
+    
     print('#'*20)
-    cal = newsCalendar()
+    cal = newsCalendar(start_engine=True)
     print(cal._tab)
     print('#'*20)
-    cal.calData()
-    print('#'*20)
-    print(cal.data)
-    print('#'*20)
-    print(cal.df.head())
-    print('#'*20)
-    print(cal.data_dict)
-    print('#'*20)
-    print(len(cal.data))
-    print(len(cal.df))
+    #print(cal.wait)
+    #cal.getEvent()
+    cal.toSql()
     cal.quitScrap()
