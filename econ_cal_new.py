@@ -65,7 +65,7 @@ class newsCalendar(EconCalScraper):
         '''
         if self.start_engine == True:
             self.getEvent()
-            self.df.to_sql('rough_upload', self.engine, if_exists='replace')
+            self.df.to_sql('Data_Release_Calendar', self.engine, if_exists='replace')
         else:
             print('SQL engine not connected on instantiation')
         
