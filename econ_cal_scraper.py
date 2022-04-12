@@ -294,7 +294,7 @@ class EconCalScraper:
 
 
 if __name__ == '__main__':
-    tab_input = input('Input tab you would like to navigate to. Must be one of (i) econ_calendar, (ii) fin_cal,news, (iii) spread, (iv) sentiment, (v) heatmap, (vi) correlation ')
+    tab_input = input('Input tab you would like to navigate to. Must be one of (i) econ_calendar, (ii) fin_cal, (iii) news, (iv) spread, (v) sentiment, (vi) heatmap, (vii) correlation ')
     scraper = EconCalScraper(tab=tab_input, headless=True)
     time.sleep(2)
     scraper.getLinks()
