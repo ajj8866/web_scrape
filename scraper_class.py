@@ -40,6 +40,10 @@ class aniScraper:
         return str(self.driver.current_url)
 
     def accRejCookies(self, rej = False):
+        '''
+        If rej set to False then all cookies are accepted in browser session. 
+        If rej set to True then only essential cookies are retained for browser session
+        '''
         wait = WebDriverWait(self.driver, 10)
         if rej == True:
             cookies =  wait.until(EC.element_to_be_clickable((By.ID, '_evidon-decline-button')))
@@ -49,11 +53,18 @@ class aniScraper:
             cookies.click()
 
     def getShows(self):
+        '''
+        Goes to tab showing all anime as a list
+        '''
         shows = self.driver.find_element(By.XPATH, '//a[@href = "/en-gb/videos/anime"]')
         shows.click()
         print(self.driver.current_url)
 
     def quitDriver(self):
+        '''
+        Closes and quits webdriver
+        '''
+        self.driver.close()
         self.driver.quit()
     
     def pickSection(self, tab = 'popular'):
@@ -100,12 +111,18 @@ class aniScraper:
             time.sleep(1)
 
     def getWebpage(self):
+        '''
+        Shows html of webpage formatted for convenience
+        '''
         print(self.driver.current_url)
         soup = BeautifulSoup(requests.get(self.driver.current_url).text, 'html.parser')
         print(soup.prettify())
         return soup
 
     def getLinks(self):
+        '''
+        Gets all links for webpage 
+        '''
         print(f'Current URL: {self.driver.current_url}')
 
 
@@ -121,4 +138,3 @@ if __name__ == '__main__':
     time.sleep(2)
     sc.quitDriver()
 
-#print(BeautifulSoup(requests.get('https://www.crunchyroll.com/en-gb/videos/anime/genres/sci-fi#/videos/anime/genres/sci-fi,supernatural')))
