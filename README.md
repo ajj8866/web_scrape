@@ -21,7 +21,7 @@ Site used is [crunchyroll](https://www.crunchyroll.com/en-gb), a streaming servi
 | filterGenre | Filters shows listed by genre |
 
 ## Myfxbook 
-Financial news blog providing news, analysis and calendar updates on factors impacting forex markets 
+Site used is [myfxbook](https://www.myfxbook.com/), a financial news blog providing news, analysis and calendar updates on factors impacting forex markets 
 
 #### <u>econ_cal_scraper.py</u> 
 
@@ -44,7 +44,7 @@ Class inheriting from econ_cal_scraper. Navigates specifically to economic calen
 | Method | Method Description |
 | :-- | :-- |
 | __init__ | In addition to data inherited from parent class instantiates an empty dataframe for storing variables in tabular form, a list of dictionaries with each dictionary storing a single observation variables and a dictionary of lists with each list containing all observations corresponding to a given column header. Both the list of dictionaries and dictionaries store identical differing only insofar as their convenience for different purposes; storing data in a dataframe and in a json file. For convenience also include option to connect to AWS RDS instance |
-| getEvent | Uses beautifulsoup and selenium to scrape data in the news page storing such data in a dataframe and a list of dictionaries, appending a UUID and a formatted data variable, using datetime's strptime function for convenience in using pandas functions should the need arise.<br /> Rescraping is prevented by using pandas drop_duplicates function. However, to allow for getting the latest update to the time remaining for a particular news event the last duplicate is retained. |
+| getEvent | Uses beautifulsoup and selenium to scrape data in the news page storing such data in a dataframe and a list of dictionaries, appending a UUID and a formatted data variable, using datetime's strptime function for convenience in using pandas functions should the need arise.<br /> <br />Rescraping is prevented by using pandas drop_duplicates function. However, to allow for getting the latest update to the time remaining for a particular news event the last duplicate is retained. |
 | transformData | Converts list of dictionaries, self.data, into dictionary of lists, self.data_dict |
 | calData | Stores scraped data in json file, newws_data.json |
 | toSql | Uploads dataframe self.df onto RDS instance |
@@ -58,6 +58,29 @@ Includes a more comprehensive array of options with regards to interacting with 
 | aws_s3_upload | Uploads file 'upload_file' onto s3 bucker 'bucket_name' aliasing it as 'bucket_file_alias' |
 | ls_buckets | List all buckets existing in s3 instance |
 | aws_s3_upload_folder | Uploads all file existing in folder specified in 'argument' onto bucket 'bucket_name'. By default 'path' points to image folder in current working directory which stores images |
+
+## test_econ_cal_scraper.py 
+Unit test file for econ_cal_scraper.py. 
+
+| Method | Description |
+| :-- | :-- |
+| setUp | Instantiates three instances of EconCalScraper class each navigating to a different tab |
+| tearDown | Ensure each instance started up on setUp method |
+| test_getImgs | Checks whether the img_dict attribute is of type dict when calling getImgs |
+| test_mkFold | Checks the image folder |
+| test_getPage | Ensures each class instance is navigated to the current URL on instantiation |
+| test_reset | Ensure tab is succesfully set to the one specified in new_tb argument |
+
+
+## test_econ_cal_new.py
+| Method | Description |
+| :-- | :-- |
+| setUp | Instantiates two instances of newsCalendar class |
+| tearDown | Ensure each instance started up on setUp method |
+| test_getEvent | Calls and tests the getEvent method which yield a tuple of a list of dictionaries and a dataframe, each containing the same data. The test checks both are of the same length |
+| test_tranformData | Ensures on calling the transformData method the list of dictionaries is transformed to a dicionary of list |
+
+
 
 
 
