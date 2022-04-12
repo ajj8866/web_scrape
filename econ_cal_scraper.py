@@ -1,3 +1,4 @@
+from tkinter import N
 import requests
 from bs4 import BeautifulSoup
 import uuid
@@ -9,6 +10,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
+from sqlalchemy import true
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import pandas as pd
@@ -266,10 +268,19 @@ class EconCalScraper:
         time.sleep(5)
         link_list = []
         for i in ['econ_calendar','fin_cal','news','spread','sentiment','heatmap','correlation']:
+            time.sleep(2)
             new_inst = cls(url = 'https://www.myfxbook.com/', tab = i)
             new_inst.getLinks()
-            link_list.extend(new_inst.link_list)
+            print(new_inst.link_dict)
+            for i in new_inst.link_dict[1:]:
+                print(i)
+                print(i.keys())
+                print(i.values())
+                if 'Links' in i.keys():
+                    link_list.extend(i['Links'])
+            #link_list.extend([j['Links'] for j in new_inst.link_dict])
             time.sleep(5)
+            new_inst.quitScrap()
         link_list = set(link_list)
         print(len(link_list))
         print(link_list)
@@ -282,53 +293,26 @@ class EconCalScraper:
         return cls.inst
 
 
-#for i in ['econ_calendar', 'fin_cal', 'news', 'spread', 'sentiment', 'heatmap', 'correlation']:    
-#    scraper = EconCalScraper(tab=i)
-#    time.sleep(10)
-#    scraper.quitScrap()
-#    print('Done for: ', i)
-#    time.sleep(3)
-
-'''
-scraper = EconCalScraper(tab='econ_calendar')
-scraper.getEvent()
-scraper.quitScrap()
-
-print(scraper.df.head())
-scraper.addUUUID()
-time.sleep(2)
-print(scraper.df.head())
-'''
-
-
-
-'''
-    #scraper.getLinks()
-    scraper.allLinks()
-
-    #time.sleep(3)
-    #scraper.allLinks()
-    scraper.quitScrap()
-
-
-'''
 if __name__ == '__main__':
-    scraper = EconCalScraper(tab='econ_calendar', headless=True)
+    tab_input = input('Input tab you would like to navigate to. Must be one of (i) econ_calendar, (ii) fin_cal,news, (iii) spread, (iv) sentiment, (v) heatmap, (vi) correlation ')
+    scraper = EconCalScraper(tab=tab_input, headless=True)
     time.sleep(2)
+    scraper.getLinks()
     scraper.getImgs(ext='png')
     scraper.uploadImg()
-    time.sleep(2)
-    scraper.uploadImg()
+    scraper.archImg()
     scraper.quitScrap()
-    scraper2 = EconCalScraper(tab='sentiment', headless=True)
-    time.sleep(2)
-    scraper2.getImgs(ext='png')
-    print(scraper.img_dict)
-    scraper2.quitScrap()
-    scraper3 = EconCalScraper(tab='spread')
-    scraper3.getImgs(ext='png')
-    time.sleep(2)
-    scraper3.allLinks()
-    scraper3.quitScrap()
 
-    aws_s3_upload_folder()
+    upload_to_s3 = input('Upload to s3 bucket?')
+    if upload_to_s3 == 'yes'.lower():
+        aws_s3_upload_folder()
+
+    all_links = input('Get all links?')
+    if all_links == 'yes'.lower():    
+        # Running of all Links class method
+        scraper3 = EconCalScraper(tab='spread', headless=True)
+        scraper3.quitScrap()
+        time.sleep(2)
+        scraper3.allLinks()
+
+    

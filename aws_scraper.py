@@ -34,7 +34,7 @@ def ls_buckets():
         buck_ls.append(i)
     return buck_ls
 
-def aws_s3_upload_folder(bucket_name = 'datapipelines3fx', path = Path(Path.cwd(), 'Datapipe','raw_data', 'images')):#, bucket_name = 'datapipelines3fx', acc_inp = input('Enter access key id'), acc_sec = input('Enter secret access key')):
+def aws_s3_upload_folder(bucket_name = 'datapipelines3fx', path = Path(Path.cwd(), 'raw_data', 'images')):#, bucket_name = 'datapipelines3fx', acc_inp = input('Enter access key id'), acc_sec = input('Enter secret access key')):
     sess = boto3.client('s3')
     for i in os.listdir(path):
         home = Path(Path.home(), 'Downloads', 'AICore', 'Datapipe')

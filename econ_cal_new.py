@@ -146,28 +146,28 @@ class newsCalendar(EconCalScraper):
 
 
 if __name__ == '__main__':
-    # print('#'*20)
-    # cal = newsCalendar()
-    # print(cal._tab)
-    # print('#'*20)
-    # cal.calData()
-    # print('#'*20)
-    # print(cal.data)
-    # print('#'*20)
-    # print(cal.df.head())
-    # print('#'*20)
-    # print(cal.data_dict)
-    # print('#'*20)
-    # print(len(cal.data))
-    # print(len(cal.df))
-    # cal.quitScrap()
+    inst_engine = input('Start SQL engine on instantiation and upload to RDS?')
+    if inst_engine == 'yes'.lower():
+        cal = newsCalendar(start_engine=True)
+        try:
+            cal.getEvent()
+            cal.toSql()
+            print(cal.data)
+            print(cal.data_dict)
+            print(cal.df.head())
+            cal.quitScrap()
+        except:
+            cal.quitScrap()
+    else:
+        cal = newsCalendar(start_engine=False)
+        try:
+            cal.getEvent()
+            print(cal.data)
+            print(cal.data_dict)
+            print(cal.df.head())
+            cal.quitScrap()
+        except:
+            cal.quitScrap()
 
-    
-    print('#'*20)
-    cal = newsCalendar(start_engine=True)
-    print(cal._tab)
-    print('#'*20)
-    #print(cal.wait)
-    #cal.getEvent()
-    cal.toSql()
-    cal.quitScrap()
+
+
