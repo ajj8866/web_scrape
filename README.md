@@ -81,7 +81,15 @@ Unit test file for econ_cal_scraper.py.
 | test_tranformData | Ensures on calling the transformData method the list of dictionaries is transformed to a dicionary of list |
 
 ## Screenshots for Milestones 
+
+### Prometheus Docker container, node exporter and EC2 instance 
 <img width="968" alt="image" src="https://user-images.githubusercontent.com/100163231/163034690-6924e046-6ac6-425e-8958-1c27bab23959.png">
+
+
+### RDS Dataupload
+![image](https://user-images.githubusercontent.com/100163231/163035116-96537d8c-d375-4a47-be59-de3c04418e5f.png)
+
+
 
 
 
