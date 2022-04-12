@@ -7,6 +7,7 @@ Initial website of choice was Crunchyroll given presence of capcha had to use an
 
 <u>econ_cal_new.py</u>: Contains tabular data with ID column taken to unique identifier for any upcoming news announcement 
 
+
 ## Crunchyroll Webscraper
 Site used is [crunchyroll](https://www.crunchyroll.com/en-gb), a streaming service for watching anime.
 
@@ -42,7 +43,22 @@ Class inheriting from econ_cal_scraper. Navigates specifically to economic calen
 
 | Method | Method Description |
 | :-- | :-- |
-| __init__ | In addition to data inherited from parent class instantiates an empty dataframe for storing variables in tabular form, a list of dictionaries with each dictionary storing a single observation variables and a dictionary of lists with each list containing all observations corresponding to a given column header. Both the list of dictionaries and dictionaries store identical differing only insofar as their convenience for different purposes; storing data in a dataframe and in a json file. |
-| getEvent | Uses beautifulsoup and selenium to scrape data in the news page storing such data in a dataframe and a list of dictionaries, appending a UUID and a formatted data variable, using datetime's strptime function for convenience in using pandas functions should the need arise |
+| __init__ | In addition to data inherited from parent class instantiates an empty dataframe for storing variables in tabular form, a list of dictionaries with each dictionary storing a single observation variables and a dictionary of lists with each list containing all observations corresponding to a given column header. Both the list of dictionaries and dictionaries store identical differing only insofar as their convenience for different purposes; storing data in a dataframe and in a json file. For convenience also include option to connect to AWS RDS instance |
+| getEvent | Uses beautifulsoup and selenium to scrape data in the news page storing such data in a dataframe and a list of dictionaries, appending a UUID and a formatted data variable, using datetime's strptime function for convenience in using pandas functions should the need arise.<br /> Rescraping is prevented by using pandas drop_duplicates function. However, to allow for getting the latest update to the time remaining for a particular news event the last duplicate is retained. |
 | transformData | Converts list of dictionaries, self.data, into dictionary of lists, self.data_dict |
 | calData | Stores scraped data in json file, newws_data.json |
+| toSql | Uploads dataframe self.df onto RDS instance |
+
+
+## aws_scraper.py 
+Includes a more comprehensive array of options with regards to interacting with AWS s3 or RDS instance
+
+| Function | Function Description |
+| :-- | :-- |
+| aws_s3_upload | Uploads file 'upload_file' onto s3 bucker 'bucket_name' aliasing it as 'bucket_file_alias' |
+| ls_buckets | List all buckets existing in s3 instance |
+| aws_s3_upload_folder | Uploads all file existing in folder specified in 'argument' onto bucket 'bucket_name'. By default 'path' points to image folder in current working directory which stores images |
+
+
+
+
