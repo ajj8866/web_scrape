@@ -146,7 +146,7 @@ class newsCalendar(EconCalScraper):
 
 
 if __name__ == '__main__':
-    inst_engine = input('Start SQL engine on instantiation and upload to RDS?')
+    inst_engine = input('Start SQL engine on instantiation and upload to RDS? All data will be uploaded to RDS if "yes"')
     if inst_engine == 'yes'.lower():
         cal = newsCalendar(start_engine=True)
         try:
@@ -167,6 +167,9 @@ if __name__ == '__main__':
             print(cal.df.head())
             cal.quitScrap()
         except:
+            '''
+            Quits driver should error occur
+            '''
             cal.quitScrap()
 
 
