@@ -80,6 +80,8 @@ Unit test file for econ_cal_scraper.py.
 | test_getEvent | Calls and tests the getEvent method which yield a tuple of a list of dictionaries and a dataframe, each containing the same data. The test checks both are of the same length |
 | test_tranformData | Ensures on calling the transformData method the list of dictionaries is transformed to a dicionary of list |
 
+## Screenshots for Milestones 
+<img width="968" alt="image" src="https://user-images.githubusercontent.com/100163231/163034690-6924e046-6ac6-425e-8958-1c27bab23959.png">
 
 
 
