@@ -99,6 +99,7 @@ class newsCalendar(EconCalScraper):
         print('time_con_1')
         self.df['Date'] = self.df['Date'].apply(lambda i: i + ' 2022')
         print('time_con_2')
+        print(self.df.head())
         self.df['Formatted Date'] = self.df['Date'].apply(lambda i: dt.strptime(i, '%b %d, %H:%M %Y'))
         print('time_con_3')
         self.df.drop_duplicates(subset = ['ID'], keep = 'last', inplace = True)
