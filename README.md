@@ -109,6 +109,7 @@ The config below pertains to the running of the docker daemon in the background
 ### s3 Bucket Upload
 Used in econ_cal_scrapey.py script but specific function used to upload onto s3, aws_s3_upload, imported from aws_class.py and used to upload images stored in local raw_data > images directory 
 
+![image](https://user-images.githubusercontent.com/100163231/163249725-b0e215cb-b600-45da-ab83-f325d745bc97.png)
 
 
 ### RDS Dataupload
