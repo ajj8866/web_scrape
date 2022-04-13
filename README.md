@@ -82,13 +82,46 @@ Unit test file for econ_cal_scraper.py.
 
 ## Screenshots for Milestones 
 
+### EC2 Running of Scraper 
+![image](https://user-images.githubusercontent.com/100163231/163238415-236a2800-c6bf-4071-bf91-590b890ca32e.png)
+![image](https://user-images.githubusercontent.com/100163231/163238532-1ad7dcf9-73d6-4a18-acc5-b31253274d5b.png)
+![image](https://user-images.githubusercontent.com/100163231/163238630-0bb1082b-804f-454d-a1ed-70a0ffca6497.png)
+
+
 ### Prometheus Docker container, node exporter and EC2 instance 
+Prometheus container based of prom/prometheus image run on AWS EC2 instance. Running of the Prometheus image contains the following tags:
+- `-p 9090:9090` Binding port 9090 on local machine to port 9090 on virtual machine
+- `-v /root/prometheus.yml:/etc/prometheus/prometheus.yml` Mounting of file prometheus.yml on local machine to virtual machine
+- `-d` Keeps prometheus running in background
+
+
+
 <img width="968" alt="image" src="https://user-images.githubusercontent.com/100163231/163034690-6924e046-6ac6-425e-8958-1c27bab23959.png">
+
+Configuration for allowing Prometheus to scrape data pertaining to the docker daemon, node exporter running on EC2 instance and prometheus itself (both in the context of local machine and running of an EC2 instance is set out as in the config file below (though public IPv4 address for EC2 will change each time the EC2 instance is restarted)
+![image](https://user-images.githubusercontent.com/100163231/163238184-0342dc74-3752-4957-95eb-d75e5e3befbd.png)
+
+The config below pertains to the running of the docker daemon in the background 
+![image](https://user-images.githubusercontent.com/100163231/163238275-99052ee4-941a-4fca-ac4b-b4363dc73aa8.png)
+
+![image](https://user-images.githubusercontent.com/100163231/163239257-473d456c-6b59-4c25-aefb-ef8004933b79.png)
 
 
 ### RDS Dataupload
 ![image](https://user-images.githubusercontent.com/100163231/163035116-96537d8c-d375-4a47-be59-de3c04418e5f.png)
 
+### Grafana/Node Exporter
+
+Node exporter also set up on local EC2 instance using the following steps in AWS EC2 instance:
+- `sudo wget https://github.com/prometheus/node_exporter/releases/download/v*/node_exporter-*.*-amd64.tar.gz`
+- `sudo tar -xvf node_exporter-*.*-amd64.tar.gz` : For unzipping node exporter file
+- cd into unzipped node file and copy onto local url to view metrics being sent by node:
+ `http://<copied-text-from-previous-step>:9100` 
+
+Grafana installed using instructions as set out in official page for mac and accesses using local port 3000
+![image](https://user-images.githubusercontent.com/100163231/163239123-97f55f71-7432-49c2-acec-c6db832d79ca.png)
+
+![image](https://user-images.githubusercontent.com/100163231/163239168-c0c96a0e-85a5-4ae3-a7fd-8a99ad1ef492.png)
 
 
 
