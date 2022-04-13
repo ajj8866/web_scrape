@@ -106,8 +106,13 @@ The config below pertains to the running of the docker daemon in the background
 
 ![image](https://user-images.githubusercontent.com/100163231/163239257-473d456c-6b59-4c25-aefb-ef8004933b79.png)
 
+### s3 Bucket Upload
+Used in econ_cal_scrapey.py script but specific function used to upload onto s3, aws_s3_upload, imported from aws_class.py and used to upload images stored in local raw_data > images directory 
+
+
 
 ### RDS Dataupload
+Yielded using newCalendar class from econ_cal_new.py. Specifically using the toSql() methods. Please note toSql() already calls the method needed to scrape data from page so no need to run .getEvent() prior in order to scrape information to store into the class instances .df attribute
 ![image](https://user-images.githubusercontent.com/100163231/163035116-96537d8c-d375-4a47-be59-de3c04418e5f.png)
 
 ### Grafana/Node Exporter
