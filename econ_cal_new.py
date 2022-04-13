@@ -157,7 +157,7 @@ if __name__ == '__main__':
     if inst_engine == 'yes'.lower():
         cal = newsCalendar(start_engine=True)
         try:
-            cal.getEvent()
+            #cal.getEvent()
             cal.toSql()
             print(cal.data)
             print(cal.data_dict)
