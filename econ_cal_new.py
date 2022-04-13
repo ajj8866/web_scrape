@@ -157,7 +157,9 @@ if __name__ == '__main__':
             print(cal.df.head())
             cal.quitScrap()
         except Exception as e:
-            print(e)
+            print('#'*20)
+            print('Exception: ', e)
+            print('#'*20)
             cal.quitScrap()
     else:
         cal = newsCalendar(start_engine=False)
@@ -167,10 +169,10 @@ if __name__ == '__main__':
             print(cal.data_dict)
             print(cal.df.head())
             cal.quitScrap()
-        except:
-            '''
-            Quits driver should error occur
-            '''
+        except Exception as e:
+            print('#'*20)
+            print('Exception: ', e)
+            print('#'*20)
             cal.quitScrap()
 
 
