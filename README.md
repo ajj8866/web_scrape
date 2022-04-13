@@ -59,7 +59,7 @@ Includes a more comprehensive array of options with regards to interacting with 
 | ls_buckets | List all buckets existing in s3 instance |
 | aws_s3_upload_folder | Uploads all file existing in folder specified in 'argument' onto bucket 'bucket_name'. By default 'path' points to image folder in current working directory which stores images |
 
-## test_econ_cal_scraper.py 
+#### test_econ_cal_scraper.py 
 Unit test file for econ_cal_scraper.py. 
 
 | Method | Description |
@@ -71,8 +71,8 @@ Unit test file for econ_cal_scraper.py.
 | test_getPage | Ensures each class instance is navigated to the current URL on instantiation |
 | test_reset | Ensure tab is succesfully set to the one specified in new_tb argument |
 
-
-## test_econ_cal_new.py
+## Unittest Files (For econ_cal_scraper.py and econ_cal_new.py)
+#### test_econ_cal_new.py
 | Method | Description |
 | :-- | :-- |
 | setUp | Instantiates two instances of newsCalendar class |
