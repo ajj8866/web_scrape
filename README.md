@@ -27,8 +27,8 @@ Site used is [myfxbook](https://www.myfxbook.com/), a financial news blog provid
 
 | Method | Method Description |
 | :-- | :-- |
-| __init__ | Navigates to tab chosen in the tab argument, instantiates chrome driver, an empty list of dictionaries for storing links and image IDs which may be scrapped using the scrapper |
-| getPage | Used on instantiation and navigates to tab chosen by user using the tab argument |
+| __init__ | Navigates to tab chosen in the tab argument, instantiates chrome driver, an empty list of dictionaries for storing links and image IDs which may be scrapped using the scrapper <br /> Headless option for running on EC2 instance and  |
+| getPage | Used on instantiation and navigates to tab chosen by user using the tab argument <br /> Toggles cell option added for case when running on EC2 instance, given on local Mac tabs already visible but on EC2 a Menu button would have to be clicked once before tabs are made visible|
 | popupEsc | Refreshed driver in the event a popup advertisment shows up, waiting a maximum of 15secs for the advertisement to show up before moving on using selenium's WebDriverWait method |
 | getImgs | Yields all iimages on relevant page storing such images into self.img_dict |
 | addUUID | Convenience method primarily used in other methods to set UUID using uuid library |
@@ -59,6 +59,8 @@ Includes a more comprehensive array of options with regards to interacting with 
 | ls_buckets | List all buckets existing in s3 instance |
 | aws_s3_upload_folder | Uploads all file existing in folder specified in 'argument' onto bucket 'bucket_name'. By default 'path' points to image folder in current working directory which stores images |
 
+
+## Unittest Files (For econ_cal_scraper.py and econ_cal_new.py)
 #### test_econ_cal_scraper.py 
 Unit test file for econ_cal_scraper.py. 
 
@@ -71,7 +73,6 @@ Unit test file for econ_cal_scraper.py.
 | test_getPage | Ensures each class instance is navigated to the current URL on instantiation |
 | test_reset | Ensure tab is succesfully set to the one specified in new_tb argument |
 
-## Unittest Files (For econ_cal_scraper.py and econ_cal_new.py)
 #### test_econ_cal_new.py
 | Method | Description |
 | :-- | :-- |
