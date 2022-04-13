@@ -156,7 +156,8 @@ if __name__ == '__main__':
             print(cal.data_dict)
             print(cal.df.head())
             cal.quitScrap()
-        except:
+        except Exception as e:
+            print(e)
             cal.quitScrap()
     else:
         cal = newsCalendar(start_engine=False)
