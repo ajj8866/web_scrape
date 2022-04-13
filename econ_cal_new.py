@@ -96,11 +96,17 @@ class newsCalendar(EconCalScraper):
         self.df = pd.DataFrame(self.data)
         self.df['UUID'] = self.addUUID(obj=self.df)
         self.df = self.df.iloc[1:]
+        print('time_con_1')
         self.df['Date'] = self.df['Date'].apply(lambda i: i + ' 2022')
+        print('time_con_2')
         self.df['Formatted Date'] = self.df['Date'].apply(lambda i: dt.strptime(i, '%b %d, %H:%M %Y'))
+        print('time_con_3')
         self.df.drop_duplicates(subset = ['ID'], keep = 'last', inplace = True)
+        print('time_con_4')
         df_dum = self.df.copy()
+        print('time_con_5')
         df_dum['Formatted Date'] = df_dum['Formatted Date'].dt.strftime('%Y-%m-%d %H:%M:%S')
+        print('time_con_6')
         print(self.df.iloc[-10:])
         self.data = df_dum.to_dict(orient = 'records')
         return self.df, self.data
