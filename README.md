@@ -25,6 +25,8 @@ Site used is [myfxbook](https://www.myfxbook.com/), a financial news blog provid
 
 ### <u>econ_cal_scraper.py</u> 
 
+<u>Class Name: EconCalScraper</u>
+
 | Method | Method Description |
 | :-- | :-- |
 | __init__ | Navigates to tab chosen in the tab argument, instantiates chrome driver, an empty list of dictionaries for storing links and image IDs which may be scrapped using the scrapper <br /> Headless option for running on EC2 instance and  |
@@ -39,6 +41,8 @@ Site used is [myfxbook](https://www.myfxbook.com/), a financial news blog provid
 | allLinks | Class method navigating to all possible tabs on Myfxbook homepage, collecting all links existing on each tab and appending them to a list. Finally set operation is applied on the list to yield all unique links  |
 
 ### <u>econ_cal_new.py</u> 
+
+<u>Class Name: newsCalendar </u>
 Class inheriting from econ_cal_scraper. Navigates specifically to economic calendar tab and getEvent tab is subsequently used to encapsulate the each piece of economic news into a dataframe containing columns ID (using uuid4), Date, Formatted date (to allow for filtering), Time to Event, Country, Event, Impact (high, medium or low), Consensus (analyst estimate of any figure), Actual (actual value of any financial figure) 
 
 | Method | Method Description |
