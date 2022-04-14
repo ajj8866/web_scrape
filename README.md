@@ -11,6 +11,9 @@ Initial website of choice was Crunchyroll given presence of capcha had to use an
 ## Crunchyroll Webscraper
 Site used is [crunchyroll](https://www.crunchyroll.com/en-gb), a streaming service for watching anime.
 
+Please use the following options for headless_op depending on whether running locally or on EC2:
+- True: If running on EC2
+- False: If running on local machine
 
 | Method | Method Description |
 | :-- | :-- |
