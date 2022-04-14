@@ -65,9 +65,7 @@ class EconCalScraper:
         self.link_dict = [dict.fromkeys(['UUID', 'Links'])]
         self.img_dict = {'UUID':[], 'Image':[], 'Extension':[]}
         time.sleep(1)
-        print(1)
         self.getPage()
-        print(11)
         self.mkPath()
         
 
@@ -76,7 +74,6 @@ class EconCalScraper:
         Method used on instantiation to navigate to selected tab as specified in tab argument
         '''
         if toggle == 'yes'.lower():
-            print(2)
             self.wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'a.menu-toggler'))).click()
             self.driver.save_screenshot('src_2.png')
         else:
@@ -176,7 +173,6 @@ class EconCalScraper:
         element = self.driver.find_elements(By.XPATH, '//a')
         print(self.driver.title)
         time.sleep(2)
-        print(self.link_dict)
         fxsitelinks = re.compile(r'https://www.myfxbook.com/.*')
         for i in element:
             if (i.get_attribute('href') is not None):
@@ -218,10 +214,6 @@ class EconCalScraper:
         for j in os.listdir(Path(Path.cwd(), 'raw_data', 'images')):
             num_list.append(int(j.split('.')[0].zfill(4)))
         for i, img_url in enumerate(self.img_list, start=len(num_list)):
-            print(img_url)
-            print('#'*20)
-            print(img_url)
-            print('#'*20)
             if (img_url['Image'].split('.')[-1] in ['png']):
                 req = request.Request(img_url['Image'], headers=headers)
                 resp = request.urlopen(req)
@@ -271,19 +263,13 @@ class EconCalScraper:
             time.sleep(2)
             new_inst = cls(url = 'https://www.myfxbook.com/', tab = i)
             new_inst.getLinks()
-            print(new_inst.link_dict)
             for i in new_inst.link_dict[1:]:
-                print(i)
-                print(i.keys())
-                print(i.values())
                 if 'Links' in i.keys():
                     link_list.extend(i['Links'])
             #link_list.extend([j['Links'] for j in new_inst.link_dict])
             time.sleep(5)
             new_inst.quitScrap()
         link_list = set(link_list)
-        print(len(link_list))
-        print(link_list)
         return link_list
     
     @classmethod
@@ -303,11 +289,11 @@ if __name__ == '__main__':
     scraper.archImg()
     scraper.quitScrap()
 
-    upload_to_s3 = input('Upload to s3 bucket?')
+    upload_to_s3 = input('Upload to s3 bucket (yes/no)? ')
     if upload_to_s3 == 'yes'.lower():
         aws_s3_upload_folder()
 
-    all_links = input('Get all links?')
+    all_links = input('Get all links (yes/no)? ')
     if all_links == 'yes'.lower():    
         # Running of all Links class method
         scraper3 = EconCalScraper(tab='spread', headless=True)

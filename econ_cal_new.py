@@ -91,23 +91,15 @@ class newsCalendar(EconCalScraper):
                 #print(j.get_text().strip())
                 dum_ls.append(j.get_text().strip())
                 ls.append(dum_ls)
-                print(dum_ls[1])
             self.data.append({'ID': int(dum_ls[0]), 'Date': dum_ls[1], 'Time to Event': dum_ls[2], 'Country': dum_ls[4], 'Event': dum_ls[5], 'Impact': dum_ls[6], 'Previous': dum_ls[7], 'Consensus': dum_ls[8], 'Actual': dum_ls[9]})
         self.df = pd.DataFrame(self.data)
         self.df['UUID'] = self.addUUID(obj=self.df)
         self.df = self.df.iloc[1:]
-        print('time_con_1')
         self.df['Date'] = self.df['Date'].apply(lambda i: i + ' 2022')
-        print('time_con_2')
-        print(self.df.head())
         self.df['Formatted Date'] = self.df['Date'].apply(lambda i: dt.strptime(i, '%b %d, %H:%M %Y'))
-        print('time_con_3')
         self.df.drop_duplicates(subset = ['ID'], keep = 'last', inplace = True)
-        print('time_con_4')
         df_dum = self.df.copy()
-        print('time_con_5')
         df_dum['Formatted Date'] = df_dum['Formatted Date'].dt.strftime('%Y-%m-%d %H:%M:%S')
-        print('time_con_6')
         print(self.df.iloc[-10:])
         self.data = df_dum.to_dict(orient = 'records')
         return self.df, self.data
@@ -153,7 +145,7 @@ class newsCalendar(EconCalScraper):
 
 
 if __name__ == '__main__':
-    inst_engine = input('Start SQL engine on instantiation and upload to RDS? All data will be uploaded to RDS if "yes"')
+    inst_engine = input('Start SQL engine on instantiation and upload to RDS (yes/no)? All data will be uploaded to RDS if "yes"  ')
     if inst_engine == 'yes'.lower():
         cal = newsCalendar(start_engine=True)
         try:
