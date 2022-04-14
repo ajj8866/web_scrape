@@ -1,4 +1,6 @@
 import unittest
+
+from regex import F
 #from Datapipe.econ_cal_new import newsCalendar
 from econ_cal_scraper import EconCalScraper
 import time
@@ -15,9 +17,9 @@ class EconCalScraperTestCase(unittest.TestCase):
         self.sentiment: Instantiated with tab set to economic sentiment
         self.heatmap: Instantiated with tab set to heatmap
         '''
-        self.fin_cal = EconCalScraper(tab='fin_cal')
-        self.sentiment = EconCalScraper(tab='sentiment')
-        self.heatmap = EconCalScraper(tab='heatmap')
+        self.fin_cal = EconCalScraper(tab='fin_cal',headless=False)
+        self.sentiment = EconCalScraper(tab='sentiment', headless=False)
+        self.heatmap = EconCalScraper(tab='heatmap', headless=False)
     
     def tearDown(self) -> None:
         try:
@@ -46,7 +48,7 @@ class EconCalScraperTestCase(unittest.TestCase):
         '''
         Ensures path exist on instantiation
         '''
-        self.assertTrue(os.path.exists(Path(Path.cwd(), 'Datapipe','raw_data')))
+        self.assertTrue(os.path.exists(Path(Path.cwd(), 'raw_data')))
 
     def test_getImgs(self):
         '''

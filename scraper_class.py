@@ -14,7 +14,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time
 
 class aniScraper:
-    def __init__(self, url = 'https://www.crunchyroll.com', tab = 'popular', headless = True):
+    def __init__(self, url = 'https://www.crunchyroll.com', tab = 'popular', headless = False):
         self.tab = tab
         self.url = url
         op = webdriver.ChromeOptions()
