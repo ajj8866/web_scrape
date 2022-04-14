@@ -86,7 +86,7 @@ Unit test file for econ_cal_scraper.py.
 Run using commands:
 - `sudo docker pull ahmadj8/fx`
 - `sudo docker run -it --name fx ahmadj8/fx python econ_cal_new.py`
-In order to allow for interaction `-d` flag not applied so container restarted using `sudo docker start fx` whenever required to perform any adhoc commands on instance using `sudo docker exec`
+In order to allow for interaction `-d` flag not applied so container restarted using `sudo docker start fx` whenever required to perform any adhoc commands on instance using `sudo docker exec` <br />
 ![image](https://user-images.githubusercontent.com/100163231/163238415-236a2800-c6bf-4071-bf91-590b890ca32e.png)
 ![image](https://user-images.githubusercontent.com/100163231/163238532-1ad7dcf9-73d6-4a18-acc5-b31253274d5b.png)
 ![image](https://user-images.githubusercontent.com/100163231/163238630-0bb1082b-804f-454d-a1ed-70a0ffca6497.png)
@@ -96,28 +96,27 @@ In order to allow for interaction `-d` flag not applied so container restarted u
 Prometheus container based of prom/prometheus image run on AWS EC2 instance. Running of the Prometheus image contains the following tags:
 - `-p 9090:9090` Binding port 9090 on local machine to port 9090 on virtual machine
 - `-v /root/prometheus.yml:/etc/prometheus/prometheus.yml` Mounting of file prometheus.yml on local machine to virtual machine
-- `-d` Keeps prometheus running in background
+- `-d` Keeps prometheus running in background <br />
+
+![image](https://user-images.githubusercontent.com/100163231/163312129-484711ff-f2f6-47f0-b950-13a2f6aa6266.png)
 
 
-
-<img width="968" alt="image" src="https://user-images.githubusercontent.com/100163231/163034690-6924e046-6ac6-425e-8958-1c27bab23959.png">
-
-Configuration for allowing Prometheus to scrape data pertaining to the docker daemon, node exporter running on EC2 instance and prometheus itself (both in the context of local machine and running of an EC2 instance is set out as in the config file below (though public IPv4 address for EC2 will change each time the EC2 instance is restarted)
+Configuration for allowing Prometheus to scrape data pertaining to the docker daemon, node exporter running on EC2 instance and prometheus itself (both in the context of local machine and running of an EC2 instance is set out as in the config file below (though public IPv4 address for EC2 will change each time the EC2 instance is restarted) <br />
 ![image](https://user-images.githubusercontent.com/100163231/163238184-0342dc74-3752-4957-95eb-d75e5e3befbd.png)
 
-The config below pertains to the running of the docker daemon in the background 
+The config below pertains to the running of the docker daemon in the background <br />
 ![image](https://user-images.githubusercontent.com/100163231/163238275-99052ee4-941a-4fca-ac4b-b4363dc73aa8.png)
 
 ![image](https://user-images.githubusercontent.com/100163231/163239257-473d456c-6b59-4c25-aefb-ef8004933b79.png)
 
 ### s3 Bucket Upload
-Used in econ_cal_scrapey.py script but specific function used to upload onto s3, aws_s3_upload, imported from aws_class.py and used to upload images stored in local raw_data > images directory 
+Used in econ_cal_scrapey.py script but specific function used to upload onto s3, aws_s3_upload, imported from aws_class.py and used to upload images stored in local raw_data > images directory <br />
 
 ![image](https://user-images.githubusercontent.com/100163231/163249725-b0e215cb-b600-45da-ab83-f325d745bc97.png)
 
 
 ### RDS Dataupload
-Yielded using newCalendar class from econ_cal_new.py. Specifically using the toSql() methods. Please note toSql() already calls the method needed to scrape data from page so no need to run .getEvent() prior in order to scrape information to store into the class instances .df attribute
+Yielded using newCalendar class from econ_cal_new.py. Specifically using the toSql() methods. Please note toSql() already calls the method needed to scrape data from page so no need to run .getEvent() prior in order to scrape information to store into the class instances .df attribute <br />
 ![image](https://user-images.githubusercontent.com/100163231/163035116-96537d8c-d375-4a47-be59-de3c04418e5f.png)
 
 ### Grafana/Node Exporter
@@ -128,35 +127,35 @@ Node exporter also set up on local EC2 instance using the following steps in AWS
 - cd into unzipped node file and copy onto local url to view metrics being sent by node:
  `http://<copied-text-from-previous-step>:9100` 
 
-Grafana installed using instructions as set out in official page for mac and accesses using local port 3000
+Grafana installed using instructions as set out in official page for mac and accesses using local port 3000 <br />
 ![image](https://user-images.githubusercontent.com/100163231/163239123-97f55f71-7432-49c2-acec-c6db832d79ca.png)
 
 ![image](https://user-images.githubusercontent.com/100163231/163239168-c0c96a0e-85a5-4ae3-a7fd-8a99ad1ef492.png)
 
 ### CI-CL Workflow
-- Setup new workflow as shown below
+- Setup new workflow as shown below <br />
 ![image](https://user-images.githubusercontent.com/100163231/163310673-8b0fe2fa-abcc-4e94-83d8-c8982500840a.png)
 ![image](https://user-images.githubusercontent.com/100163231/163310700-b9fafc85-361e-48cf-b618-0b60d521285b.png)
 
-- COnfirmed workflow succesfully run both manually and on using pushing to remote github repository 
+- Confirmed workflow succesfully run both manually and on using pushing to remote github repository <br />
 <img width="941" alt="image" src="https://user-images.githubusercontent.com/100163231/163310940-d4fa49a1-54ca-4b31-aba2-f403dd5e1ac6.png">
 
 
 ### Crontab Scheduling Process
-- Constructed bash script named cron_script.sh running commands as shown below:
+- Constructed bash script named cron_script.sh running commands as shown below: <br />
  > #!/bin/bash <br />
  > sudo docker rm fx <br />
  > sudo docker pull ahmadj8/fx:latest <br />
  > sudo docker run -it --name fx ahmadj8/fx /bin/bash
 - Added execution permission for bash script in EC2 terminal using command `chmod +x cron_script.sh` 
-- Checked bash script running correctly using `./con_script.sh`
+- Checked bash script running correctly using `./con_script.sh` <br />
  ![image](https://user-images.githubusercontent.com/100163231/163310016-4eeddbb5-801f-4cdf-b471-3276682dfa08.png)
 - Set up new cron job using command `crontab -e`
-- For demonstrative purposes first set the cron job to run every 5minutes
+- For demonstrative purposes first set the cron job to run every 5minutes <br />
 ![image](https://user-images.githubusercontent.com/100163231/163310134-887afa7d-4b95-4ca4-beca-ac81c0732700.png)
-- Confirmed cron job succesfuly run 5minutes
+- Confirmed cron job succesfuly run 5minutes <br />
 ![image](https://user-images.githubusercontent.com/100163231/163310249-9b2c07b4-fbb9-4663-88a9-f1cdc836010b.png)
-- Reset cron job to run every day 
+- Reset cron job to run every day <br />
 ![image](https://user-images.githubusercontent.com/100163231/163310299-fe3fd953-50cd-4f9f-90dc-640030a020f7.png)
 
 
