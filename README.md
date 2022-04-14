@@ -1,7 +1,7 @@
 # Web Scraper (Myfxbook and Crunchyroll)
 
 ## Note 
-Initial website of choice was Crunchyroll given presence of capcha had to use another website for the purposes of scraping data. However, my alternative website (Myfxbook) didn't have a conventional cookies button so please refer to file scraper_class.py for milestones  and 2 while econ_cal_scraper.py, test_econ_cal_scraper.py and econ_cal_new.py for the remainder of the tasks. 
+Initial website of choice was Crunchyroll given presence of capcha had to use another website for the purposes of scraping data. However, my alternative website (Myfxbook) didn't have a conventional cookies button so please refer to file scraper_class.py for milestones 1 and 2 while econ_cal_scraper.py, test_econ_cal_scraper.py and econ_cal_new.py for the remainder of the tasks. 
 
 <u>econ_cal_scraper.py</u>: Provides methods for getting links, images, navigating across tabs and uploading image to s3 bucket and RDS, given primary data of choice is in tabular form and does not contain any images
 
