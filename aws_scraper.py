@@ -37,7 +37,12 @@ def ls_buckets():
 def aws_s3_upload_folder(bucket_name = 'datapipelines3fx', path = Path(Path.cwd(), 'raw_data', 'images')):
     sess = boto3.client('s3')
     for i in os.listdir(path):
-        home = Path(Path.home(), 'Downloads', 'AICore', 'Datapipe')
-        os.chdir(Path(Path.home(), 'Downloads', 'AICore','Datapipe','raw_data', 'images'))
-        sess.upload_file(i, bucket_name,i)
-        os.chdir(home)
+        try:
+            home = Path(Path.home(), 'Downloads', 'AICore', 'Datapipe')
+            os.chdir(Path(Path.home(), 'Downloads', 'AICore','Datapipe','raw_data', 'images'))
+            sess.upload_file(i, bucket_name,i)
+            os.chdir(home)
+        except:
+            os.chdir(Path(Path.cwd(), 'raw_data', 'images'))
+            sess.upload_file(i, bucket_name, i)
+            os.chdir(Path.cwd().parents[1])
