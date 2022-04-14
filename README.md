@@ -23,7 +23,7 @@ Site used is [crunchyroll](https://www.crunchyroll.com/en-gb), a streaming servi
 ## Myfxbook 
 Site used is [myfxbook](https://www.myfxbook.com/), a financial news blog providing news, analysis and calendar updates on factors impacting forex markets 
 
-#### <u>econ_cal_scraper.py</u> 
+### <u>econ_cal_scraper.py</u> 
 
 | Method | Method Description |
 | :-- | :-- |
@@ -38,7 +38,7 @@ Site used is [myfxbook](https://www.myfxbook.com/), a financial news blog provid
 | archImg | Creates (if it does not already exist) a json file which shall store json object |
 | allLinks | Class method navigating to all possible tabs on Myfxbook homepage, collecting all links existing on each tab and appending them to a list. Finally set operation is applied on the list to yield all unique links  |
 
-#### <u>econ_cal_new.py</u> 
+### <u>econ_cal_new.py</u> 
 Class inheriting from econ_cal_scraper. Navigates specifically to economic calendar tab and getEvent tab is subsequently used to encapsulate the each piece of economic news into a dataframe containing columns ID (using uuid4), Date, Formatted date (to allow for filtering), Time to Event, Country, Event, Impact (high, medium or low), Consensus (analyst estimate of any figure), Actual (actual value of any financial figure) 
 
 | Method | Method Description |
@@ -61,7 +61,7 @@ Includes a more comprehensive array of options with regards to interacting with 
 
 
 ## Unittest Files (For econ_cal_scraper.py and econ_cal_new.py)
-#### test_econ_cal_scraper.py 
+### test_econ_cal_scraper.py 
 Unit test file for econ_cal_scraper.py. 
 
 | Method | Description |
@@ -73,7 +73,7 @@ Unit test file for econ_cal_scraper.py.
 | test_getPage | Ensures each class instance is navigated to the current URL on instantiation |
 | test_reset | Ensure tab is succesfully set to the one specified in new_tb argument |
 
-#### test_econ_cal_new.py
+### test_econ_cal_new.py
 | Method | Description |
 | :-- | :-- |
 | setUp | Instantiates two instances of newsCalendar class |
@@ -81,9 +81,9 @@ Unit test file for econ_cal_scraper.py.
 | test_getEvent | Calls and tests the getEvent method which yield a tuple of a list of dictionaries and a dataframe, each containing the same data. The test checks both are of the same length |
 | test_tranformData | Ensures on calling the transformData method the list of dictionaries is transformed to a dicionary of list |
 
-## Screenshots for Milestones 
+## Screenshots/Brief Explanations for EC2 based and Subsequent Tasks
 
-### EC2 Running of Scraper 
+###EC2 Running of Scraper 
 ![image](https://user-images.githubusercontent.com/100163231/163238415-236a2800-c6bf-4071-bf91-590b890ca32e.png)
 ![image](https://user-images.githubusercontent.com/100163231/163238532-1ad7dcf9-73d6-4a18-acc5-b31253274d5b.png)
 ![image](https://user-images.githubusercontent.com/100163231/163238630-0bb1082b-804f-454d-a1ed-70a0ffca6497.png)
@@ -129,6 +129,14 @@ Grafana installed using instructions as set out in official page for mac and acc
 ![image](https://user-images.githubusercontent.com/100163231/163239123-97f55f71-7432-49c2-acec-c6db832d79ca.png)
 
 ![image](https://user-images.githubusercontent.com/100163231/163239168-c0c96a0e-85a5-4ae3-a7fd-8a99ad1ef492.png)
+
+### CI-CL Workflow
+- Setup new workflow as shown below
+![image](https://user-images.githubusercontent.com/100163231/163310673-8b0fe2fa-abcc-4e94-83d8-c8982500840a.png)
+![image](https://user-images.githubusercontent.com/100163231/163310700-b9fafc85-361e-48cf-b618-0b60d521285b.png)
+
+- COnfirmed workflow succesfully run both manually and on using pushing to remote github repository 
+<img width="941" alt="image" src="https://user-images.githubusercontent.com/100163231/163310940-d4fa49a1-54ca-4b31-aba2-f403dd5e1ac6.png">
 
 
 ### Crontab Scheduling Process
