@@ -32,7 +32,7 @@ Site used is [myfxbook](https://www.myfxbook.com/), a financial news blog provid
 
 | Method | Method Description |
 | :-- | :-- |
-| __init__ | Navigates to tab chosen in the tab argument, instantiates chrome driver, an empty list of dictionaries for storing links and image IDs which may be scrapped using the scrapper <br /> Headless option for running on EC2 instance and  |
+| __init__ | Navigates to tab chosen in the tab argument, instantiates chrome driver, an empty list of dictionaries for storing links and image IDs which may be scrapped using the scrapper <br /> Headless option for running on EC2 instance (True if on EC2 and False if running locally) |
 | getPage | Used on instantiation and navigates to tab chosen by user using the tab argument <br /> Toggles cell option added for case when running on EC2 instance, given on local Mac tabs already visible but on EC2 a Menu button would have to be clicked once before tabs are made visible|
 | popupEsc | Refreshed driver in the event a popup advertisment shows up, waiting a maximum of 15secs for the advertisement to show up before moving on using selenium's WebDriverWait method |
 | getImgs | Yields all iimages on relevant page storing such images into self.img_dict |
