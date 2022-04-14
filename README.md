@@ -42,7 +42,7 @@ Site used is [myfxbook](https://www.myfxbook.com/), a financial news blog provid
 
 ### <u>econ_cal_new.py</u> 
 
-<u>Class Name: newsCalendar </u>
+<u>Class Name: newsCalendar </u> <br />
 Class inheriting from econ_cal_scraper. Navigates specifically to economic calendar tab and getEvent tab is subsequently used to encapsulate the each piece of economic news into a dataframe containing columns ID (using uuid4), Date, Formatted date (to allow for filtering), Time to Event, Country, Event, Impact (high, medium or low), Consensus (analyst estimate of any figure), Actual (actual value of any financial figure) 
 
 | Method | Method Description |
