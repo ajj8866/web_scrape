@@ -128,7 +128,8 @@ class aniScraper:
 
 
 if __name__ == '__main__':
-    sc = aniScraper(tab='alphabet')
+    headless_op = input('Run in headless mode (True/False)? ')
+    sc = aniScraper(tab='alphabet', headless=headless_op)
     #print(sc)
     sc.getAlphaPg(letter='b')
     time.sleep(3)
