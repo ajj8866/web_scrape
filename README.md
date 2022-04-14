@@ -131,6 +131,25 @@ Grafana installed using instructions as set out in official page for mac and acc
 ![image](https://user-images.githubusercontent.com/100163231/163239168-c0c96a0e-85a5-4ae3-a7fd-8a99ad1ef492.png)
 
 
+### Crontab Scheduling Process
+- Constructed bash script named cron_script.sh running commands as shown below:
+ > #!/bin/bash <br />
+ > sudo docker rm fx <br />
+ > sudo docker pull ahmadj8/fx:latest <br />
+ > sudo docker run -it --name fx ahmadj8/fx /bin/bash
+- Added execution permission for bash script in EC2 terminal using command `chmod +x cron_script.sh` 
+- Checked bash script running correctly using `./con_script.sh`
+ ![image](https://user-images.githubusercontent.com/100163231/163310016-4eeddbb5-801f-4cdf-b471-3276682dfa08.png)
+- Set up new cron job using command `crontab -e`
+- For demonstrative purposes first set the cron job to run every 5minutes
+![image](https://user-images.githubusercontent.com/100163231/163310134-887afa7d-4b95-4ca4-beca-ac81c0732700.png)
+- Confirmed cron job succesfuly run 5minutes
+![image](https://user-images.githubusercontent.com/100163231/163310249-9b2c07b4-fbb9-4663-88a9-f1cdc836010b.png)
+- Reset cron job to run every day 
+![image](https://user-images.githubusercontent.com/100163231/163310299-fe3fd953-50cd-4f9f-90dc-640030a020f7.png)
+
+
+
 
 
 
