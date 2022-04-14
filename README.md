@@ -82,8 +82,11 @@ Unit test file for econ_cal_scraper.py.
 | test_tranformData | Ensures on calling the transformData method the list of dictionaries is transformed to a dicionary of list |
 
 ## Screenshots/Brief Explanations for EC2 based and Subsequent Tasks
-
 ###EC2 Running of Scraper 
+Run using commands:
+- `sudo docker pull ahmadj8/fx`
+- `sudo docker run -it --name fx ahmadj8/fx python econ_cal_new.py`
+In order to allow for interaction `-d` flag not applied so container restarted using `sudo docker start fx` whenever required to perform any adhoc commands on instance using `sudo docker exec`
 ![image](https://user-images.githubusercontent.com/100163231/163238415-236a2800-c6bf-4071-bf91-590b890ca32e.png)
 ![image](https://user-images.githubusercontent.com/100163231/163238532-1ad7dcf9-73d6-4a18-acc5-b31253274d5b.png)
 ![image](https://user-images.githubusercontent.com/100163231/163238630-0bb1082b-804f-454d-a1ed-70a0ffca6497.png)
