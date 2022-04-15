@@ -95,7 +95,9 @@ class newsCalendar(EconCalScraper):
         self.df = pd.DataFrame(self.data)
         self.df['UUID'] = self.addUUID(obj=self.df)
         self.df = self.df.iloc[1:]
-        self.df['Date'] = self.df['Date'].apply(lambda i: i + ' 2022')
+        print(self.df)
+        ending_year = re.compile('2022$')
+        self.df['Date'] = self.df['Date'].apply(lambda i: i + ' 2022' if re.findall(ending_year, i) == [] else i)
         self.df['Formatted Date'] = self.df['Date'].apply(lambda i: dt.strptime(i, '%b %d, %H:%M %Y'))
         self.df.drop_duplicates(subset = ['ID'], keep = 'last', inplace = True)
         df_dum = self.df.copy()
@@ -164,6 +166,8 @@ if __name__ == '__main__':
         cal = newsCalendar(start_engine=False)
         try:
             cal.getEvent()
+            #cal.getEvent()
+            cal.calData()
             print(cal.data)
             print(cal.data_dict)
             print(cal.df.head())
