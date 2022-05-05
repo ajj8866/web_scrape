@@ -78,34 +78,13 @@ class EconCalScraper:
             self.driver.save_screenshot('src_2.png')
         else:
             pass
-        if self._tab == 'econ_calendar':
-            print(3)
-            self.actionChainClick(self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-economic-calendar"]'))))
-            print('Curent name; ', __name__)
-            self.popupEsc()
-        elif self._tab == 'fin_cal':
-            self.actionChainClick(self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-calculators"]'))))
-            self.popupEsc()
-        elif self._tab == 'news':
-            self.actionChainClick(self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-news"]'))))
-            self.popupEsc()
-        elif self._tab == 'spread':
-            self.actionChainClick(self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-spreads"]'))))
-            self.popupEsc()
-        elif self._tab == 'sentiment':
-            self.actionChainClick(self.wait.until(EC.presence_of_element_located((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-outlook"]'))))
-            self.popupEsc()
-        elif self._tab == 'heatmap':
-            self.actionChainClick(self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-heatmap"]'))))
-            self.popupEsc()
-        elif self._tab == 'correlation':
-            self.actionChainClick(self.wait.until(EC.element_to_be_clickable((By.XPATH, '//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "popular-correlation"]'))))
-            self.popupEsc()
+        tab_dict = {'econ_calendar': "popular-economic-calendar", 'fin_cal': "popular-calculators", 'news': "popular-news", 'spread': "popular-spreads", 'sentiment': "popular-outlook", 'heatmap': "popular-heatmap", 'correlation': "popular-correlation"}
+        self.actionChainClick(self.wait.until(EC.element_to_be_clickable((By.XPATH, f'//ul[contains(@class, "nav navbar-nav")]/li/a[@data-gtag = "{tab_dict[self._tab]}"]'))))
+        self.popupEsc()
 
     def actionChainClick(self, el):
         actions = ActionChains(self.driver)
         actions.move_to_element(el)
-        #actions.click(el)
         actions.click()
         actions.perform()
 
@@ -146,11 +125,9 @@ class EconCalScraper:
         for i in element:
             if re.findall(img_type, i.get_attribute('src')) != []:
                 self.img_list.append({'UUID': str(uuid.uuid4()), 'Image' :i.get_attribute('src'), 'Extension': i.get_attribute('src').split('.')[-1]})
-                #print(i.get_attribute('src'))
                 self.img_dict['UUID'].append(str(uuid.uuid4()))
                 self.img_dict['Image'].append(i.get_attribute('src'))
                 self.img_dict['Extension'].append(i.get_attribute('src').split('.')[-1])
-        #self.quitScrap()
         self.img_list = self.img_list[1:]
         print(self.img_list)
         #elf.img_link_dict['Images'].extend(self.img)
@@ -181,8 +158,6 @@ class EconCalScraper:
                     self.link_dict.append({'Links': i.get_attribute('href')})
                     self.link_dict.append({'UUID': str(uuid.uuid4())})
         time.sleep(5)
-        #self.quitScrap()
-        #self.img_link_dict['Images'].extend(self.link_list)
         print(self.link_dict)
         return self.link_dict
     
@@ -197,9 +172,6 @@ class EconCalScraper:
         '''
         Makes image folder within workding directory if it doesn't already exist
         '''
-        #print('#'*20)
-        #print(os.listdir(Path(Path.cwd(), 'Datapipe','raw_data')))
-        #print('#'*20)
         if 'images' not in os.listdir(Path(Path.cwd(), 'raw_data')):
             os.mkdir(Path(Path.cwd(), 'raw_data', 'images'))
     
@@ -270,6 +242,7 @@ class EconCalScraper:
             time.sleep(5)
             new_inst.quitScrap()
         link_list = set(link_list)
+        print(link_list)
         return link_list
     
     @classmethod
@@ -300,5 +273,6 @@ if __name__ == '__main__':
         scraper3.quitScrap()
         time.sleep(2)
         scraper3.allLinks()
+        
 
     
